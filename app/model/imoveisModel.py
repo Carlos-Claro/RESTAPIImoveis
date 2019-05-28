@@ -154,7 +154,7 @@ class imoveisModel(object):
             for k,v in data.items():
                 if count > 0:
                     valor += ', '
-                valor = k + '= "' + str(v) + '"'
+                valor += k + '= "' + str(v) + '"'
                 count += 1
         qu = 'UPDATE imoveis_images set {} where id = {}'.format(valor,str(id))
         return self.conn.update(qu)
@@ -192,10 +192,10 @@ class imoveisModel(object):
         query = {}
         query['colunas'] = '*'
         query['tabela'] = 'imoveis_images'
-        query['ordem'] = 'imoveis_images.ordem ASC'
+        query['ordem'] = 'imoveis_images.data ASC'
         query['where'] = 'imoveis_images.id_empresa = "{}"'.format(str(id))
         query['where'] += 'AND imoveis_images.arquivo like "%http://%"'
-        query['limit'] = 5
+        query['limit'] = 100
         q = self.query.get(query)
         return self.conn.get(q)
     

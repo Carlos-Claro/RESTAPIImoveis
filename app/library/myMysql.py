@@ -73,7 +73,7 @@ class myMysql(object):
         with open('/var/www/json/keys.json') as json_file:
             data = json.load(json_file)
             #print(data['database']['localhost']['guiasjp'])
-            self.data = data['database']['server']['guiasjp']
+            self.data = data['database']['localhost']['guiasjp']
         
 
     def connect(self):
