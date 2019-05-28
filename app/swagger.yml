@@ -1,0 +1,293 @@
+swagger: "2.0"
+info:
+  description: "Imoveis rest api para integraçãod e fotos"
+  version: "1.0.0"
+  title: "Imoveis RESTAPI"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/"
+
+# Paths supported by the server application
+paths:
+  /people:
+    get:
+      operationId: "controller.people.read"
+      tags:
+        - "People"
+      summary: "The people data structure supported by the server application"
+      description: "Read the list of people"
+      responses:
+        200:
+          description: "Successful read people list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                fname:
+                  type: "string"
+                lname:
+                  type: "string"
+                timestamp:
+                  type: "string"
+  /imoveis:
+    post:
+      operationId: "controller.imoveis.add"
+      tags:
+        - "Imóveis"
+      summary: ""
+      description: ""
+      responses:
+        201:
+          description: "Successful add imoveis "
+          schema:
+            type: "array"
+            items:
+              properties:
+                _id:
+                  type: "string"
+                id:
+                  type: "string"
+    get:
+      operationId: "controller.imoveis.get"
+      tags:
+        - "Imoveis"
+      summary: ""
+      description: ""
+      responses:
+        200:
+          description: "retorna 100 imóveis que estejam na condição de não sincronizado, por ordem de cidades, 1 São josé, 2 Curitiba e assim por diante"
+          schema:
+            type: "array"
+            items:
+              properties:
+                _id:
+                  type: "string"
+                id:
+                  type: "string"
+                nome:
+                  type: "string"
+                preco:
+                  type: "string"
+                data_atualizacao:
+                  type: "string"
+                preco_venda:
+                  type: "string"
+                preco_locacao:
+                  type: "string"
+                preco_locacao_dia:
+                  type: "string"
+                logradouro:
+                  type: "string"
+                video:
+                  type: "string"
+                terreno:
+                  type: "string"
+                quartos:
+                  type: "string"
+                garagens:
+                  type: "string"
+                banheiros:
+                  type: "string"
+                area:
+                  type: "string"
+                area_terreno:
+                  type: "string"
+                area_util:
+                  type: "string"
+                mudou:
+                  type: "string"
+                vila:
+                  type: "string"
+                bairro:
+                  type: "string"
+                bairros_link:
+                  type: "string"
+                imoveis_tipos_titulo:
+                  type: "string"
+                imoveis_tipos_english:
+                  type: "string"
+                imoveis_tipos_link:
+                  type: "string"
+                imoveis_tipos_id:
+                  type: "string"
+                id_tipo:
+                  type: "string"
+                cidades_link:
+                  type: "string"
+                tipo:
+                  type: "string"
+                tipo_venda:
+                  type: "string"
+                tipo_locacao:
+                  type: "string"
+                tipo_locacao_dia:
+                  type: "string"
+                id_empresa:
+                  type: "string"
+                views:
+                  type: "string"
+                imovel_id_cidade:
+                  type: "string"
+                bairro_cidade:
+                  type: "string"
+                cidades_id:
+                  type: "string"
+                cidade_nome:
+                  type: "string"
+                uf:
+                  type: "string"
+                bairro_combo:
+                  type: "string"
+                nome_empresa:
+                  type: "string"
+                imobiliaria_nome:
+                  type: "string"
+                imobiliaria_nome_seo:
+                  type: "string"
+                imobiliaria_telefone:
+                  type: "string"
+                imobiliaria_whatsapp:
+                  type: "string"
+                logo:
+                  type: "string"
+                imobiliaria_logradouro:
+                  type: "string"
+                imobiliaria_bairro:
+                  type: "string"
+                imobiliaria_cidade:
+                  type: "string"
+                imobiliaria_numero:
+                  type: "string"
+                empresa_email:
+                  type: "string"
+                locacao_email:
+                  type: "string"
+                creci:
+                  type: "string"
+                longitude:
+                  type: "string"
+                latitude:
+                  type: "string"
+                logradouro_:
+                  type: "string"
+                descricao:
+                  type: "string"
+                referencia:
+                  type: "string"
+                ordem:
+                  type: "string"
+                uso:
+                  type: "string"
+                mapa:
+                  type: "string"
+                imovel_para:
+                  type: "string"
+                tipo_negocio:
+                  type: "string"
+                venda:
+                  type: "string"
+                locacao:
+                  type: "string"
+                locacao_dia:
+                  type: "string"
+                quartos:
+                  type: "string"
+                suites:
+                  type: "string"
+                banheiros:
+                  type: "string"
+                garagens:
+                  type: "string"
+                mobiliado:
+                  type: "string"
+                cobertura:
+                  type: "string"
+                condominio:
+                  type: "string"
+                condominio_valor:
+                  type: "string"
+                area_terreno:
+                  type: "string"
+                area:
+                  type: "string"
+                area_util:
+                  type: "string"
+                preco_venda:
+                  type: "string"
+                preco_locacao:
+                  type: "string"
+                preco_locacao_dia:
+                  type: "string"
+                id_cidade:
+                  type: "string"
+                bairro:
+                  type: "string"
+                bairros_link:
+                  type: "string"
+                vila:
+                  type: "string"
+                cep:
+                  type: "string"
+                logradouro:
+                  type: "string"
+                numero:
+                  type: "string"
+                comercial:
+                  type: "string"
+                residencial:
+                  type: "string"
+                lazer:
+                  type: "string"
+                video:
+                  type: "string"
+                banheiros:
+                  type: "string"
+                mostramapa:
+                  type: "string"
+                destaque_bairro:
+                  type: "string"
+                destaque_tipo:
+                  type: "string"
+                novo:
+                  type: "string"
+                cidades_link:
+                  type: "string"
+                ddd:
+                  type: "string"
+                cidade:
+                  type: "string"
+                uf:
+                  type: "string"
+                estado:
+                  type: "string"
+                cidade_link:
+                  type: "string"
+                email_corretor:
+                  type: "string"
+                nome_corretor:
+                  type: "string"
+                sms_corretor:
+                  type: "string"
+                celular_corretor:
+                  type: "string"
+                sms_quem:
+                  type: "string"
+                sms_limite:
+                  type: "string"
+                empresa_telefone_sms:
+                  type: "string"
+                pagina_limite_ofertas:
+                  type: "string"
+                valores:
+                  type: "string"
+                status:
+                  type: "string"
+                situacao_titulo:
+                  type: "string"
+                situacao_link:
+                  type: "string"
+              
+              
