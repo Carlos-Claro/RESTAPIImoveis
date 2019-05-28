@@ -126,7 +126,7 @@ class imoveisModel(object):
         retorno = {}
         for item in itens:
             retorno[item['id']] = item
-            retorno[item['id']]['images'] = self.getImagesID(item['id'])
+            retorno[item['id']]['images'] = self.getImagesIDimovel(item['id'])
         return retorno
     
     def add_images(self, data):
