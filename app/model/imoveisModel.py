@@ -77,11 +77,14 @@ class imoveisModel(object):
         q = self.query.get(query)
         itens = self.conn.get(q)
         i = {}
-        for item in itens:
-            i[item['id']] = item
-            i[item['id']]['images'] = self.getImagesID(item['id'])
-        if i[item['id']]:
-            retorno = i[item['id']]
+        if len(itens):
+            for item in itens:
+                i[item['id']] = item
+                i[item['id']]['images'] = self.getImagesIDimovel(item['id'])
+            if i[item['id']]:
+                retorno = i[item['id']]
+            else:
+                retorno = False
         else:
             retorno = False
         return retorno
