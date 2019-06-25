@@ -79,7 +79,7 @@ class imoveisModel(object):
         i = {}
         for item in itens:
             i[item['id']] = item
-            i[item['id']]['images'] = self.getImagesID(item['id'])
+            i[item['id']]['images'] = self.getImagesIDimovel(item['id'])
         if i[item['id']]:
             retorno = i[item['id']]
         else:
