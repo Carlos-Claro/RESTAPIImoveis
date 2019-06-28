@@ -61,7 +61,13 @@ def imoveis_images_(id):
 def imoveis_images_copy():
     retorno = {}
     imoveis = Imoveis()
-    return jsonify(imoveis.images())
+    return jsonify(imoveis.imagesIDEmpresa())
+
+@app.route('/imoveis_images_gerar/<limit>',methods=['GET'])
+def imoveis_images_gerar(limit):
+    retorno = {}
+    imoveis = Imoveis()
+    return jsonify(imoveis.imagesGerar(limit))
 
 @app.route('/imoveismongo',methods=['GET','POST'])
 def imoveismongo():

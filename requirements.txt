@@ -5,5 +5,4 @@ connexion[swagger-ui]
 pymongo
 request
 pprint
-unittest
 python-resize-image

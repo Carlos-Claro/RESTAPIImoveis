@@ -79,8 +79,11 @@ class Imoveis(object):
         imoveis = self.imoveisModel.getItens()
         return imoveis
         
-    def images(self):
-        return self.imoveisModel.getImagesIDempresaHTTP(83544)
+    def imagesIDEmpresa(self,idEmpresa):
+        return self.imoveisModel.getImagesIDempresaHTTP(idEmpresa)
+    
+    def imagesGerar(self,limit):
+        return self.imoveisModel.getImagesGerar(limit)
     
     
 if __name__ == '__main__':

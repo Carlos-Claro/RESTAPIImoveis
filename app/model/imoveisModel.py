@@ -191,6 +191,21 @@ class imoveisModel(object):
         q = self.query.get(query)
         return self.conn.get(q)
     
+    def getImagesGerar(self,limit):
+        query = {}
+        query['colunas'] = 'imoveis_images.*'
+        query['tabela'] = 'imoveis_images'
+        query['join'] = [
+                {'tabela':'empresas','where':'imoveis_images.id_empresa = empresas.id','tipo':'INNER'},
+                {'tabela':'imoveis','where':'imoveis_images.id_imovel = imoveis.id','tipo':'INNER'},
+                ]
+        query['ordem'] = 'imoveis.id_cidade ASC, imoveis.data DESC'
+        query['where'] = 'imoveis_images.gerado_image = 0'
+        query['offset'] = 0
+        query['limit'] = limit
+        q = self.query.get(query)
+        return self.conn.get(q)
+    
     def getImagesIDempresaHTTP(self, id):
         query = {}
         query['colunas'] = '*'
