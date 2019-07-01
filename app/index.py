@@ -35,11 +35,9 @@ def imoveis_id(id):
     retorno = {}
     imoveis = Imoveis()
     if request.method == 'PUT':
-        data = request.args
-        retorno = data
+        retorno = imoveis.update(id)
     elif request.method == 'DELETE':
-        data = request.args
-        retorno = data
+        retorno = imoveis.delete(id)
     return jsonify(retorno)
 
 @app.route('/imoveis_images/<id_empresa>',methods=['GET'])
