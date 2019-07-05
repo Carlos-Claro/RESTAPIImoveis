@@ -20,7 +20,7 @@ class myMongo(object):
     
     def update_one(self,collection,filtro,data):
         coll = self.db[collection]
-        res = coll.update_one(filtro,{'$inc':data}).modified_count
+        res = coll.update_one(filtro,{'$set':data}).modified_count
         return res
 
     def update_many(self,collection,filtro,data):
@@ -40,7 +40,7 @@ class myMongo(object):
 
     def get_item(self,collection,id):
         coll = self.db[collection]
-        p = coll.find_one(id)
+        p = coll.find_one({'_id':int(id)})
         return p
 
     # data array: [where, limit, sort, ]

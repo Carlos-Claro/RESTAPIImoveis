@@ -3,6 +3,7 @@
 import mysql.connector as mysql
 from mysql.connector import Error
 import json
+import sys
 
 
 class myMysql(object):
@@ -70,10 +71,13 @@ class myMysql(object):
         return retorno
     
     def getDataconnection(self):
+        db = 'server'
+        if 'localhost' in sys.argv:
+            db = 'localhost'
+        print(db)
         with open('/var/www/json/keys.json') as json_file:
             data = json.load(json_file)
-            self.data = data['database']['server']['guiasjp']
-            #self.data = data['database']['server']['guiasjp']
+            self.data = data['database'][db]['guiasjp']
         
 
     def connect(self):

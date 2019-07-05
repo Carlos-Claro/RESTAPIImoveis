@@ -162,6 +162,20 @@ class imoveisModel(object):
         qu = 'UPDATE imoveis_images set {} where id = {}'.format(valor,str(id))
         return self.conn.update(qu)
     
+    def update_images_id_imovel(self,data,id):
+        if isinstance(data,str):
+            valor = data
+        else:
+            valor = ''
+            count = 0
+            for k,v in data.items():
+                if count > 0:
+                    valor += ', '
+                valor += k + '= "' + str(v) + '"'
+                count += 1
+        qu = 'UPDATE imoveis_images set {} where id_imovel = {}'.format(valor,str(id))
+        return self.conn.update(qu)
+    
     def delete_images_id(self, id):
         q = 'SELECT id from imoveis_images where id = {} '.format(str(id))
         a = len(self.conn.get(q))

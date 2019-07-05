@@ -55,6 +55,20 @@ def imoveis_images_(id):
     retorno = imoveis.update_images_id(id)
     return jsonify(retorno)
 
+@app.route('/imovel_images_imovel/',methods=['PUT'])
+def imoveis_images_imovel_():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.update_images()
+    return jsonify(retorno)
+
+@app.route('/imovel_images_imovel_/<id_imovel>',methods=['PUT'])
+def imoveis_images_imovel(id):
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.update_images()
+    return jsonify(retorno)
+
 @app.route('/imovel_images_copy/',methods=['GET'])
 def imoveis_images_copy():
     retorno = {}
@@ -65,7 +79,7 @@ def imoveis_images_copy():
 def imoveis_images_gerar(limit):
     retorno = {}
     imoveis = Imoveis()
-    return jsonify(imoveis.imagesGerar(limit))
+    return jsonify(imoveis.imagesGerarMongo(limit))
 
 @app.route('/imoveismongo',methods=['GET','POST'])
 def imoveismongo():
@@ -80,11 +94,11 @@ def imoveismongo():
     #return render_template('../templates/main.html')
     #return render_template('../templates/main.html')
 @app.route('/imoveismongo/<id>',methods=['GET'])
-def imoveismongo_():
+def imoveismongo_(id):
     retorno = {}
     imoveis = Imoveis()
     if request.method == 'GET':
-        retorno = imoveis.get_mongo()
+        retorno = imoveis.mongoGetId(id)
     return jsonify(retorno)
 
 @app.route('/imoveismongo/<id>',methods=['PUT','DELETE'])
@@ -92,8 +106,7 @@ def imoveismongo_id(id):
     retorno = {}
     imoveis = Imoveis()
     if request.method == 'PUT':
-        data = request.args
-        retorno = data
+        retorno = imoveis.mongoUpdate(id, request.args)
     elif request.method == 'DELETE':
         data = request.args
         retorno = data
