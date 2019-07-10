@@ -59,7 +59,7 @@ class Imoveis(object):
         retorno = 0
         data = request.args
         id = data['id']
-        i = self.imoveisModel.update_images_id_imovel(data,id)
+        i = self.imoveisModel.update_images_id(data,id)
         return {'qtde':i}
     
     def update_images_id_test(self,id,data):

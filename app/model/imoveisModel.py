@@ -37,7 +37,7 @@ class imoveisModel(object):
             for k,v in data.items():
                 if count > 0:
                     valor += ', '
-                valor = k + '=' + str(v)
+                valor += k + '=' + str(v)
         qu = 'UPDATE imoveis set {} where id = {}'.format(valor,str(id))
         print(qu)
         return self.conn.update(qu)
@@ -160,6 +160,7 @@ class imoveisModel(object):
                 valor += k + '= "' + str(v) + '"'
                 count += 1
         qu = 'UPDATE imoveis_images set {} where id = {}'.format(valor,str(id))
+        print(qu)
         return self.conn.update(qu)
     
     def update_images_id_imovel(self,data,id):
@@ -174,6 +175,7 @@ class imoveisModel(object):
                 valor += k + '= "' + str(v) + '"'
                 count += 1
         qu = 'UPDATE imoveis_images set {} where id_imovel = {}'.format(valor,str(id))
+        print(qu)
         return self.conn.update(qu)
     
     def delete_images_id(self, id):
