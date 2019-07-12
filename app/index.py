@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-
 from flask import render_template,request,jsonify
+from flask import Flask
 import connexion
 import sys
-sys.path.append('library')
-sys.path.append('controller')
-sys.path.append('model')
-from Imoveis import Imoveis
+
+sys.path.append('/library')
+sys.path.append('/controller')
+sys.path.append('/model')
+from controller.Imoveis import Imoveis
 
 app = connexion.App(__name__,specification_dir='./')
 #app.add_api('swagger.yml')
@@ -113,6 +114,7 @@ def imoveismongo_id(id):
     return jsonify(retorno)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000,debug=True)
+    print('import')
+    app.run(host='127.0.0.1',port=80,debug=True)
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from myMongo import myMongo
+from library.myMongo import myMongo
 import datetime
 
 class imoveisMongo(object):

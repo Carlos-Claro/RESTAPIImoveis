@@ -5,9 +5,9 @@ import sys
 sys.path.append('../library')
 sys.path.append('../controller')
 sys.path.append('../model')
-from imoveisModel import imoveisModel
-from imoveisMongo import imoveisMongo
-from myMongo import myMongo
+from model.imoveisModel import imoveisModel
+from model.imoveisMongo import imoveisMongo
+from library.myMongo import myMongo
 from flask import request
 import time
 

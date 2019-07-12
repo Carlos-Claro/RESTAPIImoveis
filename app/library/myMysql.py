@@ -3,8 +3,7 @@
 import mysql.connector as mysql
 from mysql.connector import Error
 import json
-import sys
-
+import sys, os
 
 class myMysql(object):
     
@@ -72,7 +71,7 @@ class myMysql(object):
     
     def getDataconnection(self):
         db = 'server'
-        if 'localhost' in sys.argv:
+        if 'programacao' in os.environ['PATH']:
             db = 'localhost'
         print(db)
         with open('/var/www/json/keys.json') as json_file:
