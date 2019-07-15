@@ -26,7 +26,6 @@ class myMysql(object):
             if(conn.is_connected()):
                 cursor.close()
                 conn.close()
-                print("MySQL connection is closed")
     
     def update(self,query):
         try:
@@ -43,7 +42,6 @@ class myMysql(object):
             if(conn.is_connected()):
                 cursor.close()
                 conn.close()
-                print("MySQL connection is closed")
     
     def delete(self,query):
         try:
@@ -73,7 +71,6 @@ class myMysql(object):
         db = 'server'
         if 'programacao' in os.environ['PATH']:
             db = 'localhost'
-        print(db)
         with open('/var/www/json/keys.json') as json_file:
             data = json.load(json_file)
             self.data = data['database'][db]['guiasjp']

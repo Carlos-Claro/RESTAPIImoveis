@@ -114,7 +114,6 @@ def imoveismongo_id(id):
     return jsonify(retorno)
 
 if __name__ == '__main__':
-    print('import')
     app.run(host='127.0.0.1',port=80,debug=True)
 
 

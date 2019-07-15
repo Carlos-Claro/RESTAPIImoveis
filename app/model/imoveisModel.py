@@ -25,7 +25,6 @@ class imoveisModel(object):
         keys += ')'
         values += ')'
         query = 'INSERT INTO imoveis {} VALUES {}'.format(keys,values)
-        print(query)
         return self.conn.add(query)
     
     def update_id(self,data,id):
@@ -39,7 +38,6 @@ class imoveisModel(object):
                     valor += ', '
                 valor += k + '=' + str(v)
         qu = 'UPDATE imoveis set {} where id = {}'.format(valor,str(id))
-        print(qu)
         return self.conn.update(qu)
     
     def delete_id(self, id):
@@ -160,7 +158,6 @@ class imoveisModel(object):
                 valor += k + '= "' + str(v) + '"'
                 count += 1
         qu = 'UPDATE imoveis_images set {} where id = {}'.format(valor,str(id))
-        print(qu)
         return self.conn.update(qu)
     
     def update_images_id_imovel(self,data,id):
@@ -175,7 +172,6 @@ class imoveisModel(object):
                 valor += k + '= "' + str(v) + '"'
                 count += 1
         qu = 'UPDATE imoveis_images set {} where id_imovel = {}'.format(valor,str(id))
-        print(qu)
         return self.conn.update(qu)
     
     def delete_images_id(self, id):
