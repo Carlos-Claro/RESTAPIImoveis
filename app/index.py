@@ -2,7 +2,8 @@
 from flask import render_template,request,jsonify
 from flask import Flask
 import connexion
-import sys
+import sys, os
+
 
 sys.path.append('/library')
 sys.path.append('/controller')
@@ -29,6 +30,14 @@ def imoveis_(id):
     imoveis = Imoveis()
     if request.method == 'GET':
         retorno = imoveis.get_id(id)
+    return jsonify(retorno)
+
+@app.route('/imoveis_in/<id>',methods=['GET'])
+def imoveis_in(id):
+    retorno = {}
+    imoveis = Imoveis()
+    if request.method == 'GET':
+        retorno = imoveis.get_in(id)
     return jsonify(retorno)
 
 @app.route('/imovel/<id>',methods=['PUT','DELETE'])
@@ -114,6 +123,9 @@ def imoveismongo_id(id):
     return jsonify(retorno)
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=80,debug=True)
+    if 'localhost' in sys.argv:
+        app.run(host='127.0.0.1',port=5000,debug=True)
+    else:
+        app.run(host='127.0.0.1',port=80,debug=True)
 
 

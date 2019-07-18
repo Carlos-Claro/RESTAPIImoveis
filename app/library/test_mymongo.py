@@ -24,9 +24,17 @@ class TestmyMongo(unittest.TestCase):
         self.assertTrue(isinstance(res['itens'],object))
         self.assertTrue(res['qtde'] > 0)
     
+    def test_get_in(self):
+        data = {}
+        data['where'] = {'id' : {'$in':['1846844', '1846729', '1846933', '1846826']}, 'id_empresa':'83765'}
+        res = self.db.get_itens("imoveis",data)
+        self.assertTrue(isinstance(res['itens'],object))
+        print(res['itens'])
+        self.assertTrue(res['qtde'] > 0)
+    
     def test_get_one(self):
         res = self.db.get_item("imoveis",{"imovel_id_cidade":"2"})
-        self.assertTrue(res['_id'])
+        self.assertTrue('_id' is res)
 #    
  #   def test_delete_true(self):
   #      filtro = {"_id":self.INS['_id']}

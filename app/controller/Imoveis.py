@@ -37,6 +37,26 @@ class Imoveis(object):
     def get(self):
         return self.imoveisModel.getItens()
     
+    def get_in(self,id_empresa):
+        get = request.args['id']
+        a = json.loads(get);
+        ids = []
+        for i in a:
+            ids.append(i)
+        data = {}
+        data['where'] = {'id' : {'$in':ids}, 'id_empresa':str(id_empresa)}
+        value = self.myMongo.get_itens('imoveis',data)
+        if len(ids) == value['qtde'] :
+            res = {'deleta':False}
+        else:
+            if value['qtde'] == 0:
+                res = {'deleta':True, 'todos':True}
+            else:
+                res = {'deleta':True, 'ids':[]}
+                for item in value['itens']:
+                    res['ids'].append(item['id'])
+        return res
+    
     def get_id(self,id):
         return self.imoveisModel.getItem(id)
     
