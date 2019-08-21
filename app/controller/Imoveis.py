@@ -44,8 +44,10 @@ class Imoveis(object):
         for i in a:
             ids.append(i)
         data = {}
-        data['where'] = {'id' : {'$in':ids}, 'id_empresa':str(id_empresa)}
+        print(ids)
+        data['where'] = {'id_' : {'$in':ids}, 'id_empresa':str(id_empresa)}
         value = self.myMongo.get_itens('imoveis',data)
+        print(value)
         if len(ids) == value['qtde'] :
             res = {'deleta':False}
         else:
@@ -128,7 +130,7 @@ class Imoveis(object):
     
     def imagesGerarMongo(self,limit):
         data = {}
-        data['where'] = {'tem_foto': False, 'cidades_id': {'$gt': '0'}}
+        data['where'] = {'tem_foto': False, 'cidades_id': {'$in': ['9730', '2', '10', '4', '5', '27','1']}}
         data['sort'] = {'data_update':0, 'cidades_id': 1, 'ordem':0}
         data['limit'] = int(limit)
         return self.myMongo.get_itens('imoveis',data)
