@@ -45,7 +45,7 @@ class Imoveis(object):
             ids.append(i)
         data = {}
         print(ids)
-        data['where'] = {'id_' : {'$in':ids}, 'id_empresa':str(id_empresa)}
+        data['where'] = {'id_' : {'$in':ids}, 'id_empresa':str(id_empresa), 'cidades_id': {'$in': ['9730', '2', '10', '4', '5', '27','1']} }
         value = self.myMongo.get_itens('imoveis',data)
         print(value)
         if len(ids) == value['qtde'] :
