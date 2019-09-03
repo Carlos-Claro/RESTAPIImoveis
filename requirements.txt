@@ -6,3 +6,4 @@ pymongo
 request
 pprint
 python-resize-image
+flask_api

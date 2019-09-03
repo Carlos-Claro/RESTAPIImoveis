@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify
 from flask import Flask
+from flask_api import status
 import connexion
 import sys, os
 
@@ -30,7 +31,10 @@ def imoveis_(id):
     imoveis = Imoveis()
     if request.method == 'GET':
         retorno = imoveis.get_id(id)
-    return jsonify(retorno)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
 
 @app.route('/imoveis_in/<id>',methods=['GET'])
 def imoveis_in(id):
@@ -77,6 +81,13 @@ def imoveis_images_imovel(id):
     retorno = {}
     imoveis = Imoveis()
     retorno = imoveis.update_images()
+    return jsonify(retorno)
+
+@app.route('/update_imovel_verifica/<id_imovel>',methods=['PUT'])
+def update_imoveis_images_imovel(id):
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.update_images_id_imovel(id)
     return jsonify(retorno)
 
 @app.route('/imovel_images_copy/',methods=['GET'])
