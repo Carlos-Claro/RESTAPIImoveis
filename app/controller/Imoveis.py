@@ -59,6 +59,15 @@ class Imoveis(object):
                     res['ids'].append(item['id'])
         return res
     
+    def get_id_cidade(self,id_):
+        data = {}
+        data['where'] = {'id' : id_, 'cidades_id': {'$in': ['9730', '2', '10', '4', '5', '27','1']} }
+        value = self.myMongo.get_itens('imoveis',data)
+        if value['qtde'] == 0 :
+            return False
+        else:
+            return value['itens']
+    
     def get_id(self,id):
         return self.imoveisModel.getItem(id)
     
@@ -110,9 +119,7 @@ class Imoveis(object):
         return {'qtde':self.myMongo.update_one('imoveis',{'_id':int(id)},alt)}
     
     def mongoDelete(self,id):
-        #imoveismodel = imoveisModel()
-        #return imoveis
-        return {'teste':'rrr'}
+        return {'qtde':self.myMongo.delete_one('imoveis',{'_id':int(id)})}
     
     def mongoGet(self):
         imoveis = self.imoveisModel.getItens()

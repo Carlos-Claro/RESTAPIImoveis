@@ -36,6 +36,18 @@ def imoveis_(id):
             status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+@app.route('/imoveis_cidade/<id>',methods=['GET'])
+def imoveis_cidade(id):
+    retorno = {}
+    imoveis = Imoveis()
+    if request.method == 'GET':
+        retorno = imoveis.get_id_cidade(id)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
 @app.route('/imoveis_in/<id>',methods=['GET'])
 def imoveis_in(id):
     retorno = {}
@@ -84,10 +96,10 @@ def imoveis_images_imovel(id):
     return jsonify(retorno)
 
 @app.route('/update_imovel_verifica/<id_imovel>',methods=['PUT'])
-def update_imoveis_images_imovel(id):
+def update_imoveis_images_imovel(id_imovel):
     retorno = {}
     imoveis = Imoveis()
-    retorno = imoveis.update_images_id_imovel(id)
+    retorno = imoveis.update_images_id_imovel(id_imovel)
     return jsonify(retorno)
 
 @app.route('/imovel_images_copy/',methods=['GET'])
@@ -129,8 +141,7 @@ def imoveismongo_id(id):
     if request.method == 'PUT':
         retorno = imoveis.mongoUpdate(id, request.args)
     elif request.method == 'DELETE':
-        data = request.args
-        retorno = data
+        retorno = imoveis.mongoDelete(id)
     return jsonify(retorno)
 
 if __name__ == '__main__':
