@@ -144,6 +144,16 @@ def imoveismongo_id(id):
         retorno = imoveis.mongoDelete(id)
     return jsonify(retorno)
 
+    
+@app.app.before_request
+def before_request():
+    print(request.remote_addr)
+    if request.remote_addr in lista_ip():
+        print('ok')
+
+def lista_ip():
+    return ["127.0.0.1","189.4.3.5"]
+
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
         app.run(host='127.0.0.1',port=5000,debug=True)
