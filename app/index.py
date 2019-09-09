@@ -147,12 +147,14 @@ def imoveismongo_id(id):
     
 @app.app.before_request
 def before_request():
-    print(request.remote_addr)
     if request.remote_addr in lista_ip():
-        print('ok')
+        pass
+    else:
+        print("Kill by host")
+        exit()
 
 def lista_ip():
-    return ["127.0.0.1","189.4.3.5"]
+    return ["127.0.0.1","189.4.3.5","201.16.246.212"]
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
