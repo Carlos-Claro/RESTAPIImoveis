@@ -3,6 +3,7 @@
 import unittest
 import random
 import sys
+import datetime
 from myMongo import myMongo
 
 class TestmyMongo(unittest.TestCase):
@@ -26,15 +27,14 @@ class TestmyMongo(unittest.TestCase):
     
     def test_get_in(self):
         data = {}
-        data['where'] = {'id' : {'$in':['1846844', '1846729', '1846933', '1846826']}, 'id_empresa':'83765'}
+        data['where'] = {'id_cidade' : {'$in':['1', '2']}}
         res = self.db.get_itens("imoveis",data)
         self.assertTrue(isinstance(res['itens'],object))
-        print(res['itens'])
         self.assertTrue(res['qtde'] > 0)
     
     def test_get_one(self):
-        res = self.db.get_item("imoveis",{"imovel_id_cidade":"2"})
-        self.assertTrue('_id' is res)
+        res = self.db.get_item_filtro("imoveis",{"imovel_id_cidade":"2"})
+        self.assertTrue('_id' in res)
 #    
  #   def test_delete_true(self):
   #      filtro = {"_id":self.INS['_id']}
@@ -67,8 +67,62 @@ class TestmyMongo(unittest.TestCase):
         d = self.db.delete_one("imoveis",filtro)
         self.assertTrue(d == 1)
         
+    def test_get_aggregate(self):
+        pipeline = [
+                {"$match":{"data":{"$gte":(datetime.datetime.now() - datetime.timedelta(days=10))}}},
+                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                ]
+        res = self.db.aggregate(pipeline,'log_imoveis')
+        self.assertTrue(res['qtde'] > 0)
         
+    def test_get_aggregate_id_imovel(self):
+        da = datetime.datetime.now() - datetime.timedelta(days=10)
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        pipeline = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)}}},
+                {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                ]
+        res = self.db.aggregate(pipeline,'log_imoveis')
+        self.assertTrue(res['qtde'] > 0)
         
-    
+    def test_get_aggregate_id_empresa(self):
+        da = datetime.datetime.now() - datetime.timedelta(days=10)
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        pipeline = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)}}},
+                {"$group":{"_id":"$id_empresa","acesso":{"$sum":1}}}
+                ]
+        res = self.db.aggregate(pipeline,'log_imoveis')
+        self.assertTrue(res['qtde'] > 0)
+        retorno = {}
+        for item in res['itens']:
+            retorno[item['_id']] = []
+            retorno[item['_id']].append({'qtde':item['acesso']})
+            print(item)
+            print(item['_id'])
+            p2 = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id']}},
+                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                    ]
+            res2 = self.db.aggregate(p2,'log_imoveis')
+            self.assertTrue(res2['qtde'] > 0)
+            for tipo in res2['itens']:
+                p3 = [
+                    {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id'],"tipo":tipo['_id']}},
+                    {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                        ]
+                res3 = self.db.aggregate(p3,'log_imoveis')
+                self.assertTrue(res3['qtde'] > 0)
+                lista = []
+                for id_imovel in res3['itens']:
+                    lista.append({id_imovel['_id']:id_imovel['acesso']})
+                retorno[item['_id']].append({tipo['_id']:{'qtde':tipo['acesso'],'lista':lista}})
+                del lista
+        print(retorno)
+
 if __name__ == '__main__':
     unittest.main()

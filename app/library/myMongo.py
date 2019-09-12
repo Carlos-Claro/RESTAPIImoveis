@@ -42,6 +42,11 @@ class myMongo(object):
         coll = self.db[collection]
         p = coll.find_one({'_id':int(id)})
         return p
+    
+    def get_item_filtro(self,collection,where):
+        coll = self.db[collection]
+        p = coll.find_one(where)
+        return p
 
     # data array: [where, limit, sort, ]
     def get_itens(self,collection,data):
@@ -74,6 +79,20 @@ class myMongo(object):
     def get_total_itens(self,collection,data):
         coll = self.db[collection]
         return coll.count_documents(data['where'])
+
+
+    def aggregate(self,pipeline,collection):
+        coll = self.db[collection]
+        itens = {}
+        req = list(coll.aggregate(pipeline))
+        itens['qtde'] = 0
+        itens['itens'] = []
+        for i in req:
+            itens['itens'].append(i)
+            itens['qtde'] = itens['qtde'] + 1
+        return itens
+        
+
 
 if __name__ == '__main__':
     try:

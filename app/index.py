@@ -144,6 +144,34 @@ def imoveismongo_id(id):
         retorno = imoveis.mongoDelete(id)
     return jsonify(retorno)
 
+
+######################
+    # Requests de estatisticas
+    # Log_portal
+    # Log_imoveis
+    # Log_pesquisas
+######################
+@app.route('/log_imoveis/',methods=['GET','POST'])
+def log_imoveis():
+    retorno = {}
+    imoveis = Imoveis()
+    if request.method == 'GET':
+        retorno = imoveis.mongoGetLogEmpresaData()
+    elif request.method == 'POST':
+        retorno = imoveis.add_log_empresa_dia()
+    return jsonify(retorno)
+
+@app.route('/log_imoveis_tipo/',methods=['GET'])
+def log_imoveis_tipo():
+    retorno = {}
+    imoveis = Imoveis()
+    if request.method == 'GET':
+        retorno = imoveis.mongoGetLogImoveisTipo()
+    return jsonify(retorno)
+
+
+
+
     
 @app.app.before_request
 def before_request():

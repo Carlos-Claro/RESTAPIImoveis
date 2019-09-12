@@ -10,6 +10,7 @@ from model.imoveisMongo import imoveisMongo
 from library.myMongo import myMongo
 from flask import request
 import time
+import datetime
 
 class Imoveis(object):
     
@@ -142,6 +143,71 @@ class Imoveis(object):
         data['limit'] = int(limit)
         return self.myMongo.get_itens('imoveis',data)
     
+###########################
+        #   Estatisticas
+        #
+        #
+###########################
+    def mongoGetLogEmpresaData(self):
+        dias = request.args['dias']
+        da = datetime.datetime.now() - datetime.timedelta(days=int(dias))
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        pipeline = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)}}},
+                {"$group":{"_id":"$id_empresa","acesso":{"$sum":1}}}
+                ]
+        res = self.myMongo.aggregate(pipeline,'log_imoveis')
+        retorno = {}
+        for item in res['itens']:
+            if item['_id'] is not None and item['_id'] > 0:
+                retorno[item['_id']] = {}
+                retorno[item['_id']]['total_empresa'] = item['acesso']
+                p2 = [
+                    {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id']}},
+                    {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                        ]
+                res2 = self.myMongo.aggregate(p2,'log_imoveis')
+                for tipo in res2['itens']:
+                    p3 = [
+                        {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id'],"tipo":tipo['_id']}},
+                        {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                            ]
+                    res3 = self.myMongo.aggregate(p3,'log_imoveis')
+                    lista = []
+                    for id_imovel in res3['itens']:
+                        lista.append({id_imovel['_id']:id_imovel['acesso']})
+                    if tipo['_id'] is not None:
+                        retorno[item['_id']][tipo['_id']] = {'total': tipo['acesso'],'imoveis':lista}
+                    del lista
+        return retorno
+    
+    def mongoGetLogImoveisTipo(self):
+        dias = request.args['dias']
+        imovel = request.args['imovel']
+        da = datetime.datetime.now() - datetime.timedelta(days=int(dias))
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        pipeline = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_imovel":imovel}},
+                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                ]
+        return self.myMongo.aggregate(pipeline,'log_imoveis')
+    
+    def mongoGetLogPortalData(self):
+        data = request.args['data']
+        pipeline = [
+                {"$match":{"data":{"$gte":data}}},
+                {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                ]
+        return self.myMongo.aggregate(pipeline,'log_portal')
+    
+    def add_log_empresa_dia(self):
+        args = json.loads(request.get_json())
+        print(args)
+        return {'_id':self.myMongo.add_one('log_empresa_dia',args)}
     
 if __name__ == '__main__':
     Imoveis.get()
