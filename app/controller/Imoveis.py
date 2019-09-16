@@ -159,28 +159,91 @@ class Imoveis(object):
                 {"$group":{"_id":"$id_empresa","acesso":{"$sum":1}}}
                 ]
         res = self.myMongo.aggregate(pipeline,'log_imoveis')
+        res_p = self.myMongo.aggregate(pipeline,'log_portal')
+        empresas = self.set_soma_dbs_int(res['itens'],res_p['itens'])
         retorno = {}
-        for item in res['itens']:
-            if item['_id'] is not None and item['_id'] > 0:
-                retorno[item['_id']] = {}
-                retorno[item['_id']]['total_empresa'] = item['acesso']
-                p2 = [
-                    {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id']}},
-                    {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+        for chave,valor in empresas.items():
+            retorno[chave] = {}
+            retorno[chave]['total_empresa'] = valor
+            p2 = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":chave}},
+                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                    ]
+            res2 = self.myMongo.aggregate(p2,'log_imoveis')
+            res2_p = self.myMongo.aggregate(p2,'log_portal')
+            tipos = self.set_soma_dbs_char(res2['itens'],res2_p['itens'])
+            for chave_tipo,valor_tipo in tipos.items():
+                p3 = [
+                    {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":chave,"tipo":chave_tipo}},
+                    {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
                         ]
-                res2 = self.myMongo.aggregate(p2,'log_imoveis')
-                for tipo in res2['itens']:
-                    p3 = [
-                        {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_empresa":item['_id'],"tipo":tipo['_id']}},
-                        {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
-                            ]
-                    res3 = self.myMongo.aggregate(p3,'log_imoveis')
-                    lista = []
-                    for id_imovel in res3['itens']:
-                        lista.append({id_imovel['_id']:id_imovel['acesso']})
-                    if tipo['_id'] is not None:
-                        retorno[item['_id']][tipo['_id']] = {'total': tipo['acesso'],'imoveis':lista}
-                    del lista
+                res3 = self.myMongo.aggregate(p3,'log_imoveis')
+                res3_p = self.myMongo.aggregate(p3,'log_portal')
+                imoveis = self.set_soma_dbs_char(res3['itens'],res3_p['itens'])
+                lista = []
+                for id_imovel,valor_imovel in imoveis.items():
+                    lista.append({id_imovel:valor_imovel})
+                retorno[chave][chave_tipo] = {'total': valor_tipo,'imoveis':lista}
+                del lista
+        return retorno
+    
+    def mongoGetLogImoveisData(self):
+        dias = request.args['dias']
+        da = datetime.datetime.now() - datetime.timedelta(days=int(dias))
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        pipeline = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)}}},
+                {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                ]
+        res = self.myMongo.aggregate(pipeline,'log_imoveis')
+        res_p = self.myMongo.aggregate(pipeline,'log_portal')
+        imoveis = self.set_soma_dbs_int(res['itens'],res_p['itens'])
+        retorno = {}
+        for chave,valor in imoveis.items():
+            retorno[chave] = {}
+            retorno[chave]['total_imovel'] = valor
+            p2 = [
+                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_imovel":chave}},
+                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+                    ]
+            res2 = self.myMongo.aggregate(p2,'log_imoveis')
+            res2_p = self.myMongo.aggregate(p2,'log_portal')
+            tipos = self.set_soma_dbs_char(res2['itens'],res2_p['itens'])
+            for chave_tipo,valor_tipo in tipos.items():
+                lista = []
+                for id_imovel,valor_imovel in imoveis.items():
+                    lista.append({id_imovel:valor_imovel})
+                retorno[chave][chave_tipo] = {'total': valor_tipo,'imoveis':lista}
+                del lista
+        return retorno
+    
+    def set_soma_dbs_int(self,imoveis,portal):
+        retorno = {}
+        for i in imoveis:
+            if i['_id'] is not None and i['_id'] > 0:
+                retorno[int(i['_id'])] = i['acesso']
+        for p in portal:
+            if p['_id'] is not None and p['_id'] > 0:
+                c = int(p['_id'])
+                if c in retorno:
+                    retorno[c] = retorno[c] + p['acesso']
+                else:
+                    retorno[c] = p['acesso']
+        return retorno
+    
+    def set_soma_dbs_char(self,imoveis,portal):
+        retorno = {}
+        for i in imoveis:
+            if i['_id'] is not None:
+                retorno[i['_id']] = i['acesso']
+        for p in portal:
+            if p['_id'] is not None:
+                if p['_id'] in retorno:
+                    retorno[p['_id']] = retorno[p['_id']] + p['acesso']
+                else:
+                    retorno[p['_id']] = p['acesso']
         return retorno
     
     def mongoGetLogImoveisTipo(self):
@@ -196,18 +259,45 @@ class Imoveis(object):
                 ]
         return self.myMongo.aggregate(pipeline,'log_imoveis')
     
-    def mongoGetLogPortalData(self):
-        data = request.args['data']
+    def mongoGetLogEmpresaMinData(self):
         pipeline = [
-                {"$match":{"data":{"$gte":data}}},
-                {"$group":{"_id":"$id_imovel","acesso":{"$sum":1}}}
+                {"$group":{"_id":{},"data":{"$min":'$data'}}}
                 ]
-        return self.myMongo.aggregate(pipeline,'log_portal')
+        return self.myMongo.aggregate(pipeline,'log_empresas_dia')
+    
+    
+    def mongoGetLogEmpresaMaxData(self):
+        pipeline = [
+                {"$group":{"_id":{},"data":{"$max":'$data'}}}
+                ]
+        return self.myMongo.aggregate(pipeline,'log_empresas_dia')
+    
+    def mongoGetLogImovelMinData(self):
+        pipeline = [
+                {"$group":{"_id":{},"data":{"$min":'$data'}}}
+                ]
+        return self.myMongo.aggregate(pipeline,'log_imoveis_dia')
+    
+    
+    def mongoGetLogImovelMaxData(self):
+        pipeline = [
+                {"$group":{"_id":{},"data":{"$max":'$data'}}}
+                ]
+        return self.myMongo.aggregate(pipeline,'log_imoveis_dia')
     
     def add_log_empresa_dia(self):
         args = json.loads(request.get_json())
-        print(args)
-        return {'_id':self.myMongo.add_one('log_empresa_dia',args)}
+        data = args['data']
+        del args['data']
+        args['data'] = datetime.datetime(int(data[0]),int(data[1]),int(data[2]),0,0)
+        return {'ok':self.myMongo.add_one('log_empresas_dia',args)}
+    
+    def add_log_imovel_dia(self):
+        args = json.loads(request.get_json())
+        data = args['data']
+        del args['data']
+        args['data'] = datetime.datetime(int(data[0]),int(data[1]),int(data[2]),0,0)
+        return {'ok':self.myMongo.add_one('log_imoveis_dia',args)}
     
 if __name__ == '__main__':
     Imoveis.get()

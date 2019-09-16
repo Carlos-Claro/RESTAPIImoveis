@@ -151,24 +151,61 @@ def imoveismongo_id(id):
     # Log_imoveis
     # Log_pesquisas
 ######################
-@app.route('/log_imoveis/',methods=['GET','POST'])
+@app.route('/log_empresas/',methods=['GET'])
+def log_empresas():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogEmpresaData()
+    return jsonify(retorno) 
+
+@app.route('/log_empresa/',methods=['POST'])
+def log_empresa():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.add_log_empresa_dia()
+    return jsonify(retorno) 
+
+@app.route('/log_empresa_max_data/',methods=['GET'])
+def log_empresa_max():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogEmpresaMaxData()
+    return jsonify(retorno)
+
+@app.route('/log_empresa_min_data/',methods=['GET'])
+def log_empresa_min():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogEmpresaMinData()
+    return jsonify(retorno)
+
+@app.route('/log_imoveis/',methods=['GET'])
 def log_imoveis():
     retorno = {}
     imoveis = Imoveis()
-    if request.method == 'GET':
-        retorno = imoveis.mongoGetLogEmpresaData()
-    elif request.method == 'POST':
-        retorno = imoveis.add_log_empresa_dia()
-    return jsonify(retorno)
+    retorno = imoveis.mongoGetLogImoveisData()
+    return jsonify(retorno) 
 
-@app.route('/log_imoveis_tipo/',methods=['GET'])
-def log_imoveis_tipo():
+@app.route('/log_imovel/',methods=['POST'])
+def log_imovel():
     retorno = {}
     imoveis = Imoveis()
-    if request.method == 'GET':
-        retorno = imoveis.mongoGetLogImoveisTipo()
+    retorno = imoveis.add_log_imovel_dia()
+    return jsonify(retorno) 
+
+@app.route('/log_imovel_max_data/',methods=['GET'])
+def log_imovel_max():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogImovelMaxData()
     return jsonify(retorno)
 
+@app.route('/log_imovel_min_data/',methods=['GET'])
+def log_imovel_min():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogImovelMinData()
+    return jsonify(retorno)
 
 
 
