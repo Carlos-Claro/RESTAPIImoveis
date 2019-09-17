@@ -186,6 +186,13 @@ def log_imoveis():
     retorno = imoveis.mongoGetLogImoveisData()
     return jsonify(retorno) 
 
+@app.route('/log_imoveis_b/',methods=['GET'])
+def log_imoveis_b():
+    retorno = {}
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetLogImoveisItem()
+    return jsonify(retorno) 
+
 @app.route('/log_imovel/',methods=['POST'])
 def log_imovel():
     retorno = {}

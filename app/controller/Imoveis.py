@@ -200,23 +200,25 @@ class Imoveis(object):
         res = self.myMongo.aggregate(pipeline,'log_imoveis')
         res_p = self.myMongo.aggregate(pipeline,'log_portal')
         imoveis = self.set_soma_dbs_int(res['itens'],res_p['itens'])
+        return imoveis
+        
+    def mongoGetLogImoveisItem(self):
+        dias = request.args['dias']
+        da = datetime.datetime.now() - datetime.timedelta(days=int(dias))
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        id_imovel = request.args['id_imovel']
         retorno = {}
-        for chave,valor in imoveis.items():
-            retorno[chave] = {}
-            retorno[chave]['total_imovel'] = valor
-            p2 = [
-                {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_imovel":chave}},
-                {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
-                    ]
-            res2 = self.myMongo.aggregate(p2,'log_imoveis')
-            res2_p = self.myMongo.aggregate(p2,'log_portal')
-            tipos = self.set_soma_dbs_char(res2['itens'],res2_p['itens'])
-            for chave_tipo,valor_tipo in tipos.items():
-                lista = []
-                for id_imovel,valor_imovel in imoveis.items():
-                    lista.append({id_imovel:valor_imovel})
-                retorno[chave][chave_tipo] = {'total': valor_tipo,'imoveis':lista}
-                del lista
+        p2 = [
+            {"$match":{"data":{"$gte":datetime.datetime(y,m,d,0,0),"$lte":datetime.datetime(y,m,d,23,59)},"id_imovel":int(id_imovel)}},
+            {"$group":{"_id":"$tipo","acesso":{"$sum":1}}}
+            ]
+        res2 = self.myMongo.aggregate(p2,'log_imoveis')
+        res2_p = self.myMongo.aggregate(p2,'log_portal')
+        tipos = self.set_soma_dbs_char(res2['itens'],res2_p['itens'])
+        for chave_tipo,valor_tipo in tipos.items():
+            retorno[chave_tipo] = valor_tipo
         return retorno
     
     def set_soma_dbs_int(self,imoveis,portal):
