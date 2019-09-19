@@ -10,6 +10,7 @@ sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
 from controller.Imoveis import Imoveis
+from controller.Log import Log
 
 app = connexion.App(__name__,specification_dir='./')
 #app.add_api('swagger.yml')
@@ -151,68 +152,76 @@ def imoveismongo_id(id):
     # Log_imoveis
     # Log_pesquisas
 ######################
+@app.route('/get_log_empresas/',methods=['GET'])
+def get_log_empresas():
+    retorno = {}
+    imoveis = Log()
+    retorno = imoveis.mongoGetLogEmpresaDia()
+    return jsonify(retorno) 
+
 @app.route('/log_empresas/',methods=['GET'])
 def log_empresas():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogEmpresaData()
     return jsonify(retorno) 
 
 @app.route('/log_empresa/',methods=['POST'])
 def log_empresa():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.add_log_empresa_dia()
     return jsonify(retorno) 
 
 @app.route('/log_empresa_max_data/',methods=['GET'])
 def log_empresa_max():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogEmpresaMaxData()
     return jsonify(retorno)
 
 @app.route('/log_empresa_min_data/',methods=['GET'])
 def log_empresa_min():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogEmpresaMinData()
     return jsonify(retorno)
 
 @app.route('/log_imoveis/',methods=['GET'])
 def log_imoveis():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogImoveisData()
     return jsonify(retorno) 
 
 @app.route('/log_imoveis_b/',methods=['GET'])
 def log_imoveis_b():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogImoveisItem()
     return jsonify(retorno) 
 
 @app.route('/log_imovel/',methods=['POST'])
 def log_imovel():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.add_log_imovel_dia()
     return jsonify(retorno) 
 
 @app.route('/log_imovel_max_data/',methods=['GET'])
 def log_imovel_max():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogImovelMaxData()
     return jsonify(retorno)
 
 @app.route('/log_imovel_min_data/',methods=['GET'])
 def log_imovel_min():
     retorno = {}
-    imoveis = Imoveis()
+    imoveis = Log()
     retorno = imoveis.mongoGetLogImovelMinData()
     return jsonify(retorno)
+
 
 
 
