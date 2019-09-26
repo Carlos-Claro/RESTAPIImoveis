@@ -4,7 +4,7 @@ from flask import Flask
 from flask_api import status
 import connexion
 import sys, os
-
+from flask_cors import CORS
 
 sys.path.append('/library')
 sys.path.append('/controller')
@@ -13,6 +13,7 @@ from controller.Imoveis import Imoveis
 from controller.Log import Log
 
 app = connexion.App(__name__,specification_dir='./')
+CORS(app.app)
 #app.add_api('swagger.yml')
 
 @app.route('/imoveis',methods=['GET','POST'])

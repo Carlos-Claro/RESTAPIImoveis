@@ -16,20 +16,43 @@ class Log(object):
         self.myMongo = myMongo('imoveis')
 
     def mongoGetLogEmpresaDia(self):
-        data_i = request.args['data_inicio']
-        d_i = data_i.split('-')
-        data_f = request.args['data_fim']
-        d_f = data_f.split('-')
-        id_empresa = request.args['id_empresa']
+        dias = request.args['dias']
+        da = datetime.datetime.now() - datetime.timedelta(days=int(dias))
+        y = int(da.strftime('%Y'))
+        m = int(da.strftime('%m'))
+        d = int(da.strftime('%d'))
+        empresa = request.args['id_empresa']
         data = {}
-        data['where'] = {'id_empresa': int(id_empresa),"data":
-            {
-                    "$gte":datetime.datetime(d_i[0],d_i[1],d_i[2],0,0),
-                    "$lte":datetime.datetime(d_f[0],d_f[1],d_f[2],23,59)} 
+        data['where'] = {'id_empresa': int(empresa),"data":
+                {
+                        "$gte":datetime.datetime(y,m,d,0,0),
+                }
             }
         data['sort'] = {'data':0}
-        return self.myMongo.get_itens('log_empresas_dia',data)
+        itens = self.myMongo.get_itens('log_empresas_dia',data)
+        retorno = {}
+        retorno['qtde'] = itens['qtde']
+        retorno['itens'] = []
+        retorno['totais'] = {}
+        for valor in itens['itens']:
+            valor_a = {}
+            for c,v in valor.items():
+                if 'data' in c:
+                    valor_a[c] = v.strftime('%Y-%m-%d')
+                elif '_id' in c:
+                    pass
+                else:
+                    valor_a[c] = v
+                    if c not in self.lista_negativa:
+                        if c in retorno['totais']:
+                            retorno['totais'][c] = retorno['totais'][c] + v['total']
+                        else:
+                            retorno['totais'][c] = v['total']
+            retorno['itens'].append(valor_a)
+            del valor_a
+        return retorno
 
+    lista_negativa = ['id_empresa','total_acessos']
     
     def mongoGetLogEmpresaData(self):
         dias = request.args['dias']
