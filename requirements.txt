@@ -8,3 +8,4 @@ pprint
 python-resize-image
 flask_api
 flask-cors
+pyopenssl
