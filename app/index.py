@@ -248,9 +248,9 @@ def lista_ip():
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
+        #app.run(host='127.0.0.1',port=5000,debug=True)
         app.run(host='127.0.0.1',port=5000,debug=True)
-        #app.run(host='127.0.0.1',port=5000,debug=True,ssl_context='adhoc')
     else:
-        app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
+        app.run(host='127.0.0.1',port=80,debug=True)
 
 
