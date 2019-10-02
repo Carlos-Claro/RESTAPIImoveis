@@ -20,6 +20,10 @@ CORS(app.app)
 def index():
     return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
 
+@app.route('/favicon.ico')
+def favicon():
+    return '<img src="/favicon.ico">'
+
 @app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
     imoveis = Imoveis()
