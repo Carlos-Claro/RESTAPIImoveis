@@ -22,7 +22,7 @@ def index():
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(app.root_path,'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(os.path.join(app.root_path, 'images'),'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
