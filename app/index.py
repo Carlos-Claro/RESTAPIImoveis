@@ -18,7 +18,6 @@ CORS(app.app)
 
 @app.route('/')
 def index():
-    print (os.path.join(app.root_path, ''))
     return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
 
 @app.route('/favicon.ico')
