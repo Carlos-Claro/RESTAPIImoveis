@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import render_template,request,jsonify
+from flask import render_template,request,jsonify,send_from_directory
 from flask import Flask
 from flask_api import status
 import connexion
@@ -18,11 +18,12 @@ CORS(app.app)
 
 @app.route('/')
 def index():
+    print (os.path.join(app.root_path, ''))
     return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
 
 @app.route('/favicon.ico')
 def favicon():
-    return '<img src="/favicon.ico">'
+    return send_from_directory(os.path.join(app.root_path, ''),'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
