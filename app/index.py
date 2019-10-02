@@ -22,7 +22,7 @@ def index():
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, ''),'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(app.root_path,'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
@@ -248,9 +248,9 @@ def lista_ip():
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
-        #app.run(host='127.0.0.1',port=5000,debug=True)
         app.run(host='127.0.0.1',port=5000,debug=True)
+        #app.run(host='127.0.0.1',port=5000,debug=True,ssl_context='adhoc')
     else:
-        app.run(host='127.0.0.1',port=80,debug=True)
+        app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
 
 
