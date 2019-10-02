@@ -18,7 +18,7 @@ CORS(app.app)
 
 @app.route('/')
 def index():
-    return "Pow internet API para imóveis"
+    return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
 
 @app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
