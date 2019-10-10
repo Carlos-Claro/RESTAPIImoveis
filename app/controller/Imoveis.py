@@ -69,6 +69,16 @@ class Imoveis(object):
         else:
             return value['itens']
     
+    def get_ativos(self):
+        data = {}
+        data['limit'] = request.args['limit']
+        value = self.imoveisModel.getItens_integra(data)
+        if value['qtde'] == 0 :
+            return False
+        else:
+            return value['itens']
+        
+    
     def get_id(self,id):
         return self.imoveisModel.getItem(id)
     

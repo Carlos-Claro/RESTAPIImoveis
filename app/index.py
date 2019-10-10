@@ -57,6 +57,17 @@ def imoveis_cidade(id):
             status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+@app.route('/imoveis_integra/',methods=['GET'])
+def imoveis_integra():
+    retorno = {}
+    imoveis = Imoveis()
+    if request.method == 'GET':
+        retorno = imoveis.get_ativos()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
 
 @app.route('/imoveis_in/<id>',methods=['GET'])
 def imoveis_in(id):
