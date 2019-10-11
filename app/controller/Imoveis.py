@@ -117,7 +117,7 @@ class Imoveis(object):
     
     
     def mongoAdd(self):
-        return request.args
+        return {'qtde':self.myMongo.add_one('imoveis',request.args)}
     
     def mongoUpdate(self,id,data):
         alt = {}

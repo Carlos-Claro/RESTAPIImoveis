@@ -69,7 +69,9 @@ class myMysql(object):
     
     def getDataconnection(self):
         db = 'server'
-        if 'programacao' in os.environ['PATH']:
+        if 'localhost' in sys.argv:
+            db = 'localhost'
+        elif 'programacao' in os.environ['PATH']:
             db = 'localhost'
         with open('/var/www/json/keys.json') as json_file:
             data = json.load(json_file)
