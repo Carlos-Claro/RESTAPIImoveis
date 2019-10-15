@@ -11,6 +11,7 @@ sys.path.append('/controller')
 sys.path.append('/model')
 from controller.Imoveis import Imoveis
 from controller.Log import Log
+from controller.Imoveis_relevancia import Imoveis_relevancia
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app)
@@ -165,6 +166,26 @@ def imoveismongo_id(id):
         retorno = imoveis.mongoUpdate(id, request.args)
     elif request.method == 'DELETE':
         retorno = imoveis.mongoDelete(id)
+    return jsonify(retorno)
+
+@app.route('/imoveis_relevancia/',methods=['GET','POST'])
+def imoveis_relevancia():
+    retorno = {}
+    imoveis_relevancia = Imoveis_relevancia()
+    if request.method == 'GET':
+        retorno = imoveis_relevancia.get_total()
+    elif request.method == 'POST':
+        retorno = imoveis_relevancia.add()
+    return jsonify(retorno)
+
+@app.route('/imoveis_relevancia_log/',methods=['GET','POST'])
+def imoveis_relevancia_log():
+    retorno = {}
+    imoveis_relevancia = Imoveis_relevancia()
+    if request.method == 'GET':
+        retorno = imoveis_relevancia.get_total_log()
+    elif request.method == 'POST':
+        retorno = imoveis_relevancia.add_log()
     return jsonify(retorno)
 
 
