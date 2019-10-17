@@ -73,7 +73,10 @@ class myQuery(object):
                             elif 'not' in where['tipo']:
                                 retorno += where['campo'] + ' NOT ' + where['valor']
                             else:
-                                retorno += where['campo'] + ' = ' + where['valor']
+                                if isinstance(where['valor'],str):
+                                    retorno += where['campo'] + ' = "' + where['valor'] + '"'
+                                else:
+                                    retorno += where['campo'] + ' = ' + where['valor']
                     count_where += 1
         return retorno
 

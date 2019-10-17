@@ -83,16 +83,18 @@ class imoveisRelevanciaModel(object):
         query = {}
         query['colunas'] = '*'
         query['tabela'] = 'imoveis_relevancia'
-        d = datetime.datetime.now().strftime('%Y-%m-%d')
-        now = datetime.datetime.now()
-        t = datetime.datetime.timestamp(now)
-        query['where'] = data['filtro']
+        print(data)
+        where = []
+        for k,v in data.items():
+            var = {'tipo': 'where', 'valor':v, 'campo':k}
+            where.append(var)
+        query['where'] = where
         query['ordem'] = 'imoveis_relevancia.id DESC'
         query['offset'] = 0
         query['limit'] = 2000
         q = self.query.get(query)
         itens = self.conn.get(q)
-        return itens['qtde']
+        return len(itens)
     
     def add_log(self,data):
         count = 0
