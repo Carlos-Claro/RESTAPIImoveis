@@ -36,7 +36,7 @@ class imoveisModel(object):
             for k,v in data.items():
                 if count > 0:
                     valor += ', '
-                valor += k + '=' + str(v)
+                valor += k + '= "' + str(v) + '"'
         qu = 'UPDATE imoveis set {} where id = {}'.format(valor,str(id))
         return self.conn.update(qu)
     

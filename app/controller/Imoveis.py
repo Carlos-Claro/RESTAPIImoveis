@@ -113,11 +113,23 @@ class Imoveis(object):
     def delete_images_id_imovel(self,id):
         return {'qtde':self.imoveisModel.delete_images_id_imovel(id)}
     
+    def set_args(self,array):
+        retorno = {}
+        for k,v in array.items():
+            retorno[k] = v
+        return retorno
     
-    
+    def alteraDatas(self,item):
+        retorno = self.set_args(item)
+        retorno['data_update'] = datetime.datetime.now()
+        return retorno
     
     def mongoAdd(self):
-        return {'qtde':self.myMongo.add_one('imoveis',request.args)}
+        data = self.alteraDatas(json.loads(request.json))
+        item = self.mongoGetId(data['_id'])
+        if item:
+            return {'qtde':self.myMongo.update_one('imoveis',{'_id': data['_id']}, data)}
+        return {'qtde':self.myMongo.add_one('imoveis',data)}
     
     def mongoUpdate(self,id,data):
         alt = {}

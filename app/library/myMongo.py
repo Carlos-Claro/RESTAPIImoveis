@@ -9,13 +9,9 @@ class myMongo(object):
         self.db = self.client[database]
 
     def add_one(self,collection,data):
-        try:
-            coll = self.db[collection]
-            res = coll.insert_one(data)
-            retorno = True
-        except e:
-            retorno = False
-            pass
+        coll = self.db[collection]
+        res = coll.insert_one(data)
+        print(res)
         return retorno
     
     def add_many(self,collection,data):
