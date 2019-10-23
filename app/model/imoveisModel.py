@@ -111,7 +111,7 @@ class imoveisModel(object):
         t = datetime.datetime.timestamp(now)
         query['where'] = [ 
                  '(imoveis.vencimento = "0000-00-00" OR (imoveis.vencimento <> "0000-00-00" AND imoveis.vencimento >= "' + d + '") )'
-                , 'imoveis.reservaimovel = 0 AND imoveis.vendido =0 AND imoveis.locado =0 AND empresas.bloqueado =0 AND empresas.pagina_visivel = 1 '
+                , '(imoveis.reservaimovel = 0 AND imoveis.vendido =0 AND imoveis.locado =0 AND imoveis.invisivel = 0) AND empresas.bloqueado =0 AND empresas.pagina_visivel = 1 '
                 , 'empresas.servicos_pagina_inicio < ' + str(t) + ' AND empresas.servicos_pagina_termino > ' + str(t)
                 , '(imoveis.integra_mongo_db < "' + d + ' 00:00" OR imoveis.integra_mongo_db IS NULL)'
                 ]
