@@ -4,6 +4,7 @@
 from library.myMysql import myMysql
 from library.myQuery import myQuery
 import datetime
+import sys
 
 class imoveisModel(object):
     
@@ -117,6 +118,8 @@ class imoveisModel(object):
                 ]
         if 'filtro' in data:
             query['where'].append(data['filtro'])
+        if 'localhost' in sys.argv:
+            query['where'].append('imoveis.id_cidade = 2')
         query['group'] = 'imoveis.id'
         query['ordem'] = 'imoveis.data_atualizacao DESC, imoveis.id_cidade ASC'
         query['offset'] = 0

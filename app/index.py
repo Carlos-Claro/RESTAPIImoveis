@@ -273,9 +273,9 @@ def log_imovel_min():
 def before_request():
     if request.remote_addr in lista_ip():
         pass
-    else:
-        print("Kill by host")
-        exit()
+    #else:
+        #print("Kill by host")
+        #exit()
 
 def lista_ip():
     return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176"]
