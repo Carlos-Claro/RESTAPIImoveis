@@ -145,7 +145,8 @@ class Imoveis(object):
         return {'qtde':self.myMongo.delete_one('imoveis',{'_id':int(id)})}
     
     def mongoGet(self):
-        imoveis = self.imoveisModel.getItens()
+        data = {'limit':10}
+        imoveis = self.myMongo.get_itens('imoveis',data)
         return imoveis
         
     def mongoGetId(self,id):

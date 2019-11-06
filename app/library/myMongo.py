@@ -10,9 +10,13 @@ class myMongo(object):
 
     def add_one(self,collection,data):
         coll = self.db[collection]
-        res = coll.insert_one(data)
-        print(res)
-        return retorno
+        try:
+            res = coll.insert_one(data)
+            resposta = True
+        except:
+            print('erro_add ', data._id)
+            resposta = False
+        return resposta
     
     def add_many(self,collection,data):
         coll = self.db[collection]
@@ -52,7 +56,10 @@ class myMongo(object):
     # data array: [where, limit, sort, ]
     def get_itens(self,collection,data):
         coll = self.db[collection]
-        cursor = coll.find(data['where'])
+        if 'where' in data:
+            cursor = coll.find(data['where'])
+        else:
+            cursor = coll.find()
         if 'limit' in data:
             cursor.limit(data['limit'])
         if 'sort' in data:

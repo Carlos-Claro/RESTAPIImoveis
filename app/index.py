@@ -143,11 +143,15 @@ def imoveismongo():
     retorno = {}
     imoveis = Imoveis()
     if request.method == 'GET':
-        retorno = imoveis.get_mongo()
+        retorno = imoveis.mongoGet()
     elif request.method == 'POST':
         data = request.args
         retorno = imoveis.add_mongo(data)
-    return jsonify(retorno)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
     #return render_template('../templates/main.html')
     #return render_template('../templates/main.html')
 @app.route('/imoveismongo/<id>',methods=['GET'])
@@ -285,6 +289,6 @@ if __name__ == '__main__':
         app.run(host='127.0.0.1',port=5000,debug=True)
         #app.run(host='127.0.0.1',port=5000,debug=True,ssl_context='adhoc')
     else:
-        app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
+        app.run(host='127.0.0.1',port=80,debug=True,ssl_context='adhoc')
 
 
