@@ -53,8 +53,9 @@ class myMongo(object):
         p = coll.find_one(where)
         return p
 
-    # data array: [where, limit, sort, ]
+    # data array: [where, limit, skip, sort, ]
     def get_itens(self,collection,data):
+        print(data)
         coll = self.db[collection]
         if 'where' in data:
             cursor = coll.find(data['where'])
@@ -62,6 +63,8 @@ class myMongo(object):
             cursor = coll.find()
         if 'limit' in data:
             cursor.limit(data['limit'])
+        if 'skip' in data:
+            cursor.limit(data['skip'])
         if 'sort' in data:
             s = self.set_sort(data['sort'])
             cursor.sort(s)

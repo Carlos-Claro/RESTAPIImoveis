@@ -144,11 +144,40 @@ class Imoveis(object):
     def mongoDelete(self,id):
         return {'qtde':self.myMongo.delete_one('imoveis',{'_id':int(id)})}
     
-    def mongoGet(self):
-        data = {'limit':10}
-        imoveis = self.myMongo.get_itens('imoveis',data)
+    def mongoGet(self, data):
+        imoveis = self.myMongo.get_itens('imoveis',self.setDataPesquisa(data))
         return imoveis
         
+    def setDataPesquisa(self,data):
+        args = {}
+        for k,v in data.items():
+            args[k] = v
+        retorno = {}
+        retorno['limit'] = 10
+        if 'limit' in args:
+            retorno['limit'] = int(args['limit'])
+            del args['limit']
+        retorno['skip'] = 0
+        if 'skip' in args:
+            retorno['skip'] = int(args['skip'])
+            del args['skip']
+        retorno['sort'] = {'ordem':-1}
+        if 'coluna' in args or 'ordem' in args:
+            coluna = 'ordem'
+            if 'coluna' in args:
+                coluna = args['coluna']
+                del args['coluna']
+            ordem = -1
+            if 'ordem' in args:
+                ordem = int(args['ordem'])
+                del args['ordem']
+            retorno['sort'] = {coluna:ordem}
+        if len(args) > 0:
+            retorno['where'] = args
+        return retorno
+    
+    
+    
     def mongoGetId(self,id):
         imoveis = self.myMongo.get_item('imoveis',id)
         return imoveis
