@@ -119,7 +119,7 @@ class imoveisModel(object):
         if 'filtro' in data:
             query['where'].append(data['filtro'])
         #if 'localhost' in sys.argv:
-        #    query['where'].append('imoveis.id_cidade in (1,2)')
+        #    query['where'].append('imoveis.id_cidade in (2)')
         query['group'] = 'imoveis.id'
         query['ordem'] = 'imoveis.id_cidade ASC, imoveis.data_atualizacao DESC'
         query['offset'] = 0
