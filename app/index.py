@@ -11,6 +11,7 @@ sys.path.append('/controller')
 sys.path.append('/model')
 from controller.Imoveis import Imoveis
 from controller.Log import Log
+from controller.Cidades import Cidades
 from controller.Imoveis_relevancia import Imoveis_relevancia
 
 app = connexion.App(__name__,specification_dir='./')
@@ -193,12 +194,28 @@ def imoveis_relevancia_log():
     return jsonify(retorno)
 
 
-######################
-    # Requests de estatisticas
-    # Log_portal
-    # Log_imoveis
-    # Log_pesquisas
-######################
+########################################
+    # Requests de Cidade            #
+########################################
+
+@app.route('/get_cidade/', methods={'GET'})
+def get_cidade():
+    retorno = {}
+    cidades = Cidades()
+    dominio = request.args['dominio']
+    retorno = cidades.mongoGet(dominio)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+########################################
+    # Requests de estatisticas      #
+    # Log_portal                    #
+    # Log_imoveis                   #
+    # Log_pesquisas                 #
+########################################
 @app.route('/get_log_empresas/',methods=['GET'])
 def get_log_empresas():
     retorno = {}
@@ -278,9 +295,11 @@ def before_request():
     if request.remote_addr in lista_ip():
         pass
     else:
-        print("Kill by host")
-        exit()
-
+        retorno = {}
+        retorno['message'] = 'kill by host'
+        status_r = status.HTTP_403_FORBIDDEN
+        return jsonify(retorno), status_r
+        
 def lista_ip():
     return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1"]
 
