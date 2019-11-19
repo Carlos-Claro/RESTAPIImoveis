@@ -238,7 +238,7 @@ class imoveisModel(object):
         query = {}
         query['colunas'] = '*'
         query['tabela'] = 'imoveis_images'
-        query['ordem'] = 'imoveis_images.id ASC'
+        query['ordem'] = 'imoveis_images.ordem ASC'
         query['where'] = 'imoveis_images.id_imovel = "{}"'.format(str(id))
         q = self.query.get(query)
         return self.conn.get(q)
