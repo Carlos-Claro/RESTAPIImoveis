@@ -301,7 +301,7 @@ def before_request():
         return jsonify(retorno), status_r
         
 def lista_ip():
-    return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1"]
+    return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
