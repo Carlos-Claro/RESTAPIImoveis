@@ -144,6 +144,10 @@ class Imoveis(object):
     def mongoDelete(self,id):
         return {'qtde':self.myMongo.delete_one('imoveis',{'_id':int(id)})}
     
+    
+    # array com ['limit', ''skip', coluna, ordem]
+    #
+    #
     def mongoGet(self, data):
         imoveis = self.myMongo.get_itens('imoveis',self.setDataPesquisa(data))
         return imoveis
@@ -157,7 +161,6 @@ class Imoveis(object):
         if 'limit' in args:
             retorno['limit'] = int(args['limit'])
             del args['limit']
-        retorno['skip'] = 0
         if 'skip' in args:
             retorno['skip'] = int(args['skip'])
             del args['skip']
@@ -174,6 +177,7 @@ class Imoveis(object):
             retorno['sort'] = {coluna:ordem}
         if len(args) > 0:
             retorno['where'] = args
+        print(retorno)
         return retorno
     
     
