@@ -175,6 +175,7 @@ class Imoveis(object):
                 ordem = int(args['ordem'])
                 del args['ordem']
             retorno['sort'] = {coluna:ordem}
+        print(args)
         if len(args) > 0:
             retorno['where'] = args
         print(retorno)
