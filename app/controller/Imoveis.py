@@ -177,11 +177,17 @@ class Imoveis(object):
             retorno['sort'] = {coluna:ordem}
         print(args)
         if len(args) > 0:
-            retorno['where'] = args
-        print(retorno)
+            retorno['where'] = self.getWhere(args)
         return retorno
     
-    
+    def getWhere(self,itens):
+        retorno = {}
+        for chave,valor in itens.items():
+            if ',' in valor:
+                retorno[chave] = {'$in':valor.split(',')}
+            else:
+                retorno[chave] = valor
+        return retorno
     
     def mongoGetId(self,id):
         imoveis = self.myMongo.get_item('imoveis',id)

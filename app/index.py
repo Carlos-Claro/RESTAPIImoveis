@@ -143,10 +143,11 @@ def imoveis_images_gerar(limit):
 def imoveismongo():
     retorno = {}
     imoveis = Imoveis()
-    data = request.args
     if request.method == 'GET':
+        data = request.args
         retorno = imoveis.mongoGet(data)
     elif request.method == 'POST':
+        data = request.args
         retorno = imoveis.add_mongo(data)
     status_r = status.HTTP_200_OK
     if retorno is False:
