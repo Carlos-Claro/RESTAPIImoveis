@@ -149,8 +149,9 @@ class Imoveis(object):
     #
     #
     def mongoGet(self, data):
-        imoveis = self.myMongo.get_itens('imoveis',self.setDataPesquisa(data))
-        return imoveis
+        retorno = {}
+        retorno['itens'] = self.myMongo.get_itens('imoveis',self.setDataPesquisa(data))
+        return retorno
         
     def setDataPesquisa(self,data):
         args = {}
