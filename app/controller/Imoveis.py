@@ -205,7 +205,7 @@ class Imoveis(object):
         if 'id_empresa' in request.args :
             data['where'] = {'tem_foto': False, 'cidades_id': {'$in': [9730, 2, 10, 4, 5, 27,1]}, 'id_empresa': request.args['id_empresa']}
         else:
-            data['where'] = {'tem_foto': False, 'cidades_id': {'$in': [9730, 2, 10, 4, 5, 27, 1]}}
+            data['where'] = {'tem_foto': False, 'cidades_id': {'$in': [9730, 2, 10, 4, 5, 27,1]}}
             
         data['sort'] = {'data_update':0, 'cidades_id': 1, 'ordem':0}
         data['limit'] = int(limit)
