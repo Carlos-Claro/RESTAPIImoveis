@@ -151,6 +151,7 @@ class Imoveis(object):
     def mongoGet(self, data):
         retorno = {}
         retorno['itens'] = self.myMongo.get_itens('imoveis',self.setDataPesquisa(data))
+        retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis',self.setDataPesquisa(data))
         return retorno
         
     def setDataPesquisa(self,data):
@@ -181,13 +182,40 @@ class Imoveis(object):
             retorno['where'] = self.getWhere(args)
         return retorno
     
+    isfloat = []
+    isint = ['quartos','garagens']
+    
+    def getItemVirgula(self,valor,tipo):
+        isin = False
+        if ',' in valor:
+            isin = True
+            array = valor.split(',')
+            v = []
+            for a in array:
+                v.append(self.getValorTipo(a,tipo))
+        else:
+            v = self.getValorTipo(valor,tipo)
+        return v,isin
+    
+    def getValorTipo(self,valor,tipo):
+        if tipo:
+            if 'int' in tipo:
+                return int(valor)
+            return valor
+        return valor
+        
+    
     def getWhere(self,itens):
         retorno = {}
         for chave,valor in itens.items():
-            if ',' in valor:
-                retorno[chave] = {'$in':valor.split(',')}
-            else:
-                retorno[chave] = valor
+            print(chave)
+            if chave in self.isint:
+                v,isin = self.getItemVirgula(valor,'int')
+            else :
+                v,isin = self.getItemVirgula(valor,False)
+            retorno[chave] = v
+            if isin:
+                retorno[chave] = {'$in':v}
         return retorno
     
     def mongoGetId(self,id):
