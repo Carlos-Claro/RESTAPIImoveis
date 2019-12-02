@@ -168,22 +168,33 @@ class Imoveis(object):
             del args['skip']
         retorno['sort'] = {'ordem':-1}
         if 'coluna' in args or 'ordem' in args:
-            coluna = 'ordem'
+            ordem = self.getOrdenacao(args);
+            retorno['sort'] = {ordem[0]:ordem[1]}
+            print(retorno['sort'])
             if 'coluna' in args:
-                coluna = args['coluna']
                 del args['coluna']
-            ordem = -1
             if 'ordem' in args:
-                ordem = int(args['ordem'])
                 del args['ordem']
-            retorno['sort'] = {coluna:ordem}
         print(args)
         if len(args) > 0:
             retorno['where'] = self.getWhere(args)
         return retorno
-    
     isfloat = []
     isint = ['quartos','garagens']
+    
+    def getOrdenacao(self,data):
+        coluna = 'ordem'
+        if data['coluna'] in ['min','max']:
+            a = data['coluna'].split('-')
+            coluna = a[0]
+            if a[1] == 'min':
+                ordem = 1
+            else: 
+                ordem = -1
+        else:
+            coluna = data['coluna']
+            ordem = -1
+        return [coluna,ordem];
     
     def getItemVirgula(self,valor,tipo):
         isin = False
