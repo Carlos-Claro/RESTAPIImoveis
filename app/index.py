@@ -291,16 +291,16 @@ def log_imovel_min():
 
 
     
+#
+#else:
+#    retorno = {}
+#    retorno['message'] = 'kill by host'
+#   status_r = status.HTTP_403_FORBIDDEN
+#    return jsonify(retorno), status_r
 @app.app.before_request
 def before_request():
     if request.remote_addr in lista_ip():
         pass
-    #
-    #else:
-    #    retorno = {}
-    #    retorno['message'] = 'kill by host'
-    #   status_r = status.HTTP_403_FORBIDDEN
-    #    return jsonify(retorno), status_r
         
 def lista_ip():
     return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
