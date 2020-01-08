@@ -6,6 +6,8 @@ import connexion
 import sys, os
 from flask_cors import CORS
 
+
+
 sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
@@ -14,9 +16,11 @@ from controller.Log import Log
 from controller.Cidades import Cidades
 from controller.Imoveis_relevancia import Imoveis_relevancia
 
+from controller.Tempo import Tempo
+
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app)
-#app.add_api('swagger.yml')
+#app.add_api('swagger.yaml')
 
 @app.route('/')
 def index():
@@ -288,6 +292,16 @@ def log_imovel_min():
     return jsonify(retorno)
 
 
+########################################
+    # Requests app Tempo Malhada    #
+########################################
+
+@app.route('/tempo_malhada/',methods=['POST'])
+def tempo_malhada():
+    retorno = {}
+    tempo = Tempo()
+    retorno = tempo.add_tempo()
+    return jsonify(retorno) 
 
 
     
@@ -301,14 +315,16 @@ def log_imovel_min():
 def before_request():
     if request.remote_addr in lista_ip():
         pass
+    
+        
         
 def lista_ip():
     return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
+        #app.run(host='192.168.100.108',port=5000,debug=True)
         app.run(host='127.0.0.1',port=5000,debug=True)
-        #app.run(host='127.0.0.1',port=5000,debug=True,ssl_context='adhoc')
     else:
         app.run(host='127.0.0.1',port=80,debug=True,ssl_context='adhoc')
 

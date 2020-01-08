@@ -1,0 +1,93 @@
+swagger: '2.0'
+info:
+  title: RESTFULL API para sistema de administração POWInternet
+  version: "2.0"
+  description: Busca avançar a versão 1.0, introduzindo itens de segurança, documentação e testes mais efetivos.
+consumes:
+  - application/json
+produces:
+  - application/json
+#security:
+  # enable OAuth protection for all REST endpoints
+  # (only active if the TOKENINFO_URL environment variable is set)
+  #- oauth2: [uid]
+
+paths:
+  /api:
+      get:
+          tags: [API]
+          operationId: index.imoveis
+          summary: Get Imóveis
+          parameters:
+            - name: _id
+              in: query
+              type: string
+              pattern: "^[0-9]*$"
+            - name: limit
+              in: query
+              type: integer
+              format: int32
+              minimum: 0
+              default: 10000000
+          responses:
+            200:
+              description: Return item
+              schema:
+                type: object
+                properties:
+                  api:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Api'
+                      
+                      
+parameters:
+  api_id:
+    name: api_id
+    description: ID da API
+    in: path
+    type: string
+    required: true
+    pattern: "^[a-zA-Z0-9-]+$"
+
+definitions:
+  Api:
+    type: object
+    required:
+      - name
+      - animal_type
+    properties:
+      id:
+        type: string
+        description: Unique identifier
+        example: "123"
+        readOnly: true
+      name:
+        type: string
+        description: Pet's name
+        example: "Susie"
+        minLength: 1
+        maxLength: 100
+      animal_type:
+        type: string
+        description: Kind of animal
+        example: "cat"
+        minLength: 1
+      tags:
+        type: object
+        description: Custom tags
+      created:
+        type: string
+        format: date-time
+        description: Creation time
+        example: "2015-07-07T15:49:51.230+02:00"
+        readOnly: true
+
+
+#securityDefinitions:
+#  oauth2:
+#    type: oauth2
+#    flow: implicit
+#    authorizationUrl: https://example.com/oauth2/dialog
+#    scopes:
+#      uid: Unique identifier of the user accessing the service.          
