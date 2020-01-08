@@ -127,11 +127,11 @@ def update_imoveis_images_imovel(id_imovel):
     retorno = imoveis.update_images_id_imovel(id_imovel)
     return jsonify(retorno)
 
-@app.route('/imovel_images_copy/',methods=['GET'])
-def imoveis_images_copy():
+@app.route('/imovel_images_copy/<id>',methods=['GET'])
+def imoveis_images_copy(id):
     retorno = {}
     imoveis = Imoveis()
-    return jsonify(imoveis.imagesIDEmpresa())
+    return jsonify(imoveis.imagesIDEmpresa(id))
 
 @app.route('/imoveis_images_gerar/<limit>',methods=['GET'])
 def imoveis_images_gerar(limit):
