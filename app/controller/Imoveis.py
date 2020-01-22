@@ -36,7 +36,7 @@ class Imoveis(object):
         return {'qtde':self.imoveisModel.delete_id(id)}
     
     def get(self):
-        return self.imoveisModel.getItens()
+        return self.imoveisModel.getItens_integra({'limit':10})
     
     def get_in(self,id_empresa):
         get = request.args['id']

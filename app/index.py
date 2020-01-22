@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-#
 from flask import render_template,request,jsonify,send_from_directory
-from flask import Flask
 from flask_api import status
 import connexion
 import sys, os
 from flask_cors import CORS
-
-
+from flask_basicauth import BasicAuth
+import json
 
 sys.path.append('/library')
 sys.path.append('/controller')
@@ -22,6 +21,15 @@ app = connexion.App(__name__,specification_dir='./')
 CORS(app.app)
 #app.add_api('swagger.yaml')
 
+with open('../../../json/keys.json') as json_file:
+    data = json.load(json_file)
+
+app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
+app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
+app.app.config['BASIC_AUTH_FORCE'] = True
+basic_auth = BasicAuth(app.app)
+
+
 @app.route('/')
 def index():
     return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
@@ -31,6 +39,7 @@ def favicon():
     return send_from_directory(os.path.join(str(app.root_path), 'images'),'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/imoveis',methods=['GET','POST'])
+@basic_auth.required
 def imoveis():
     imoveis = Imoveis()
     if request.method == 'GET':
@@ -38,9 +47,7 @@ def imoveis():
     elif request.method == 'POST':
         retorno = imoveis.add()
     return jsonify(retorno)
-    #return render_template('../templates/main.html')
-    #return render_template('../templates/main.html')
-    
+
 @app.route('/imoveis/<id>',methods=['GET'])
 def imoveis_(id):
     retorno = {}
@@ -144,6 +151,7 @@ def imoveis_images_gerar(limit):
     return jsonify(imoveis.imagesGerarMongo(limit))
 
 @app.route('/imoveismongo',methods=['GET','POST'])
+@basic_auth.required
 def imoveismongo():
     retorno = {}
     imoveis = Imoveis()
@@ -158,9 +166,8 @@ def imoveismongo():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
-    #return render_template('../templates/main.html')
-    #return render_template('../templates/main.html')
 @app.route('/imoveismongo/<id>',methods=['GET'])
+@basic_auth.required
 def imoveismongo_(id):
     retorno = {}
     imoveis = Imoveis()
@@ -304,20 +311,20 @@ def tempo_malhada():
     return jsonify(retorno) 
 
 
-    
+
 #
-#else:
-#    retorno = {}
-#    retorno['message'] = 'kill by host'
-#   status_r = status.HTTP_403_FORBIDDEN
-#    return jsonify(retorno), status_r
+
 @app.app.before_request
 def before_request():
     if request.remote_addr in lista_ip():
         pass
-    
-        
-        
+    else:
+        retorno = {}
+        retorno['message'] = 'kill by host'
+        status_r = status.HTTP_403_FORBIDDEN
+        return jsonify(retorno), status_r
+
+
 def lista_ip():
     return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
 
