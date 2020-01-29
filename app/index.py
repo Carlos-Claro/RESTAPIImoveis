@@ -18,7 +18,7 @@ from controller.Imoveis_relevancia import Imoveis_relevancia
 from controller.Tempo import Tempo
 
 app = connexion.App(__name__,specification_dir='./')
-CORS(app.app)
+CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
 
 with open('../../../json/keys.json') as json_file:
@@ -26,13 +26,16 @@ with open('../../../json/keys.json') as json_file:
 
 app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
 app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
-app.app.config['BASIC_AUTH_FORCE'] = True
+# app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
 
 
 @app.route('/')
+@basic_auth.required
 def index():
-    return '<!DOCTYPE html!><html lang=pt-br><head><meta charset="UTF-8" ></head><body><h1>Pow internet API para imóveis</h1></body></html>'
+    status_r = status.HTTP_200_OK
+    retorno = {'item':'POW Imoveis API, serve sites e portais imobiliários.'}
+    return jsonify(retorno), status_r
 
 @app.route('/favicon.ico')
 def favicon():
@@ -210,8 +213,12 @@ def imoveis_relevancia_log():
     # Requests de Cidade            #
 ########################################
 
+
+# @basic_auth.required
 @app.route('/get_cidade/', methods={'GET'})
 def get_cidade():
+    print(basic_auth.authenticate())
+    print(request.headers)
     retorno = {}
     cidades = Cidades()
     dominio = request.args['dominio']
@@ -233,7 +240,7 @@ def get_log_empresas():
     retorno = {}
     imoveis = Log()
     retorno = imoveis.mongoGetLogEmpresaDia()
-    return jsonify(retorno) 
+    return jsonify(retorno)
 
 @app.route('/log_empresas/',methods=['GET'])
 def log_empresas():
@@ -310,29 +317,43 @@ def tempo_malhada():
     retorno = tempo.add_tempo()
     return jsonify(retorno) 
 
-
+@app.app.errorhandler(401)
+def page_not_found(error):
+    print(basic_auth.check_credentials())
+    response = {'status':False, 'msg':'bloqueio de usuário, por falta de credenciais'};
+    return jsonify(response), status.HTTP_401_UNAUTHORIZED
 
 #
 
 @app.app.before_request
 def before_request():
-    if request.remote_addr in lista_ip():
+    print(basic_auth.authenticate())
+    print(request.headers)
+    print(request.method)
+    if request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
+        retorno = {}
+        retorno['message'] = 'Use Authorization to access the content'
+        status_r = status.HTTP_200_OK
+        return jsonify(retorno), status_r
+    elif basic_auth.authenticate():
+        pass
+    elif request.remote_addr in lista_ip():
         pass
     else:
         retorno = {}
         retorno['message'] = 'kill by host'
-        status_r = status.HTTP_403_FORBIDDEN
+        status_r = status.HTTP_401_UNAUTHORIZED
         return jsonify(retorno), status_r
 
 
 def lista_ip():
-    return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
+    return ["189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
         #app.run(host='192.168.100.108',port=5000,debug=True)
-        app.run(host='127.0.0.1',port=5000,debug=True)
+        app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
     else:
-        app.run(host='127.0.0.1',port=80,debug=True,ssl_context='adhoc')
+        app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
 
 
