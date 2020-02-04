@@ -73,6 +73,8 @@ class myMysql(object):
         if 'localhost' in sys.argv:
             db = 'localhost'
             endereco = '../../../json/keys.json'
+        print(endereco)
+        print(db)
         with open(endereco) as json_file:
             data = json.load(json_file)
             self.data = data['database'][db]['guiasjp']
