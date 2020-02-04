@@ -20,8 +20,10 @@ from controller.Tempo import Tempo
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
-
-with open('../../../json/keys.json') as json_file:
+endereco = '../../json/keys.json'
+if 'localhost' in sys.argv:
+    endereco = '../../../json/keys.json'
+with open(endereco) as json_file:
     data = json.load(json_file)
 
 app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
@@ -351,8 +353,8 @@ def lista_ip():
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
-        #app.run(host='192.168.100.108',port=5000,debug=True)
-        app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
+        app.run(host='127.0.0.1',port=5000,debug=True)
+        # app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
     else:
         app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
 
