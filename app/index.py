@@ -21,7 +21,7 @@ app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
 
-endereco = '../../../json/keys.json'
+endereco = '/var/www/json/keys.json'
 with open(endereco) as json_file:
     data = json.load(json_file)
 
