@@ -69,10 +69,9 @@ class myMysql(object):
     
     def getDataconnection(self):
         db = 'server'
-        endereco = '../../json/keys.json'
+        endereco = '../../../../json/keys.json'
         if 'localhost' in sys.argv:
             db = 'localhost'
-            endereco = '../../../json/keys.json'
         with open(endereco) as json_file:
             data = json.load(json_file)
             self.data = data['database'][db]['guiasjp']

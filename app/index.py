@@ -20,9 +20,8 @@ from controller.Tempo import Tempo
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
-endereco = '../../json/keys.json'
-if 'localhost' in sys.argv:
-    endereco = '../../../json/keys.json'
+
+endereco = '../../../json/keys.json'
 with open(endereco) as json_file:
     data = json.load(json_file)
 
