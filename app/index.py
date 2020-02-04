@@ -22,6 +22,8 @@ CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
 
 endereco = '/var/www/json/keys.json'
+if 'programacao' in sys.argv:
+    endereco = '/home/www/json/keys.json'
 with open(endereco) as json_file:
     data = json.load(json_file)
 
