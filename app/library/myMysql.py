@@ -69,7 +69,7 @@ class myMysql(object):
     
     def getDataconnection(self):
         db = 'server'
-        endereco = '../../../../json/keys.json'
+        endereco = '../../json/keys.json'
         if 'localhost' in sys.argv:
             db = 'localhost'
             endereco = '../../../json/keys.json'
