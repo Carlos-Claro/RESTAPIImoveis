@@ -330,9 +330,6 @@ def page_not_found(error):
 
 @app.app.before_request
 def before_request():
-    print(basic_auth.authenticate())
-    print(request.headers)
-    print(request.method)
     if request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
         retorno = {}
         retorno['message'] = 'Use Authorization to access the content'
