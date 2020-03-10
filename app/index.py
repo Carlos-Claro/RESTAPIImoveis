@@ -14,6 +14,7 @@ from controller.Imoveis import Imoveis
 from controller.Log import Log
 from controller.Cidades import Cidades
 from controller.Imoveis_relevancia import Imoveis_relevancia
+from controller.Contato_site import Contato_site
 
 from controller.Tempo import Tempo
 
@@ -306,6 +307,18 @@ def log_imovel_min():
     retorno = {}
     imoveis = Log()
     retorno = imoveis.mongoGetLogImovelMinData()
+    return jsonify(retorno)
+
+
+########################################
+    # Contato site    #
+########################################
+
+@app.route('/get_contatos/',methods=['GET'])
+def get_contatos():
+    retorno = {}
+    contatos = Contato_site()
+    retorno = contatos.getContatos()
     return jsonify(retorno)
 
 
