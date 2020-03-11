@@ -16,7 +16,7 @@ class Contato_site(object):
         self.contatoSiteModel = contatoSiteModel()
 
     def getContatos(self):
-        return {'contatos': self.contatoSiteModel.getItensDisparo(request.args)}
+        return self.contatoSiteModel.getItensDisparo(request.args)
 
 
 

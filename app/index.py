@@ -232,6 +232,17 @@ def get_cidade():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+@app.route('/get_cidade_in_ids/', methods={'POST'})
+def get_cidade_in_ids():
+    retorno = {}
+    cidades = Cidades()
+    ids = request.args['ids']
+    retorno = cidades.mongoGetinID(ids)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
 
 ########################################
     # Requests de estatisticas      #

@@ -19,12 +19,16 @@ class Cidades(object):
         cidade = self.myMongo.get_item_filtro('cidades',self.setDataPesquisa(data))
         cidade['bairros'] = self.myMongo.get_itens('bairros',{'where':{'cidade_link':cidade['link']}})
         return cidade
-        
+
     def setDataPesquisa(self,data):
         retorno = {}
         print(data)
         retorno = {'dominio':{'$regex':data}}
         return retorno
+
+    def mongoGetinID(self, data):
+        cidades = self.myMongo.get_itens('cidades',{'where':{'id':{'$in':data}}})
+        return cidades
     
 if __name__ == '__main__':
     Imoveis.get()

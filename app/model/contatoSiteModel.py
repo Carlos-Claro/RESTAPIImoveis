@@ -92,8 +92,7 @@ class contatoSiteModel(object):
 
     def getItensDisparo(self, data):
         query = {}
-        query[
-            'colunas'] = 'GROUP_CONCAT(contatos_site.id SEPARATOR ",") as id,' \
+        query['colunas'] = 'GROUP_CONCAT(contatos_site.id SEPARATOR ",") as id,' \
                          'cadastros.id as id_cadastro,' \
                          'FROM_UNIXTIME(contatos_site.data,"%d/%m/%Y %H:%i") as data,' \
                          'contatos_site.nome as nome, ' \
@@ -105,7 +104,7 @@ class contatoSiteModel(object):
                          'GROUP_CONCAT(DISTINCT contatos_site.id_tipo_item SEPARATOR ",") as id_tipo_item,' \
                          'GROUP_CONCAT(DISTINCT contatos_site.id_cidade SEPARATOR ",") as cidades,' \
                          'GROUP_CONCAT(DISTINCT imoveis_tipos.link SEPARATOR ",") as tipos_item,' \
-                         'GROUP_CONCAT(DISTINCT contatos_site.tipo_negocio_item SEPARATOR ",") as tipo_negocio_item,'
+                         'GROUP_CONCAT(DISTINCT contatos_site.tipo_negocio_item SEPARATOR ",") as tipo_negocio_item'
         query['tabela'] = 'contatos_site'
         query['join'] = [
             {'tabela': 'empresas', 'where': 'contatos_site.id_empresa = empresas.id', 'tipo': 'LEFT'}
@@ -134,10 +133,10 @@ class contatoSiteModel(object):
         query['offset'] = 0
         query['limit'] = data['limit']
         q = self.query.get(query)
-        print(q)
-        exit()
         itens = self.conn.get(q)
         return itens
+
+
 
 if __name__ == '__main__':
     print('')
