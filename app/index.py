@@ -7,6 +7,8 @@ from flask_cors import CORS
 from flask_basicauth import BasicAuth
 import json
 
+from controller.Cadastros import Cadastros
+
 sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
@@ -232,16 +234,18 @@ def get_cidade():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
-@app.route('/get_cidade_in_ids/', methods={'POST'})
+@app.route('/get_cidade_in_ids/', methods={'GET','POST'})
 def get_cidade_in_ids():
     retorno = {}
     cidades = Cidades()
-    ids = request.args['ids']
+    ids = tuple(map(int,request.args['ids'].split(',')))
     retorno = cidades.mongoGetinID(ids)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
-    return jsonify(retorno), status_r
+    elif retorno['qtde'] == 0:
+        status_r = status.HTTP_204_NO_CONTENT
+    return jsonify(retorno['itens']), status_r
 
 
 ########################################
@@ -332,6 +336,20 @@ def get_contatos():
     retorno = contatos.getContatos()
     return jsonify(retorno)
 
+@app.route('/contatos_site_sincronizado/',methods=['PUT'])
+def contatos_site_sincronizado():
+    contato = Contato_site()
+    retorno = contato.update_sincronizado()
+
+    return jsonify(retorno)
+
+@app.route('/contatos_site_sincronizado_des/',methods=['PUT'])
+def contatos_site_desincronizado():
+    contato = Contato_site()
+    retorno = contato.update_desincronizado()
+
+    return jsonify(retorno)
+
 
 ########################################
     # Requests app Tempo Malhada    #
@@ -369,9 +387,14 @@ def before_request():
         status_r = status.HTTP_401_UNAUTHORIZED
         return jsonify(retorno), status_r
 
-
+#"127.0.0.1",
 def lista_ip():
-    return ["127.0.0.1","189.4.3.5","201.16.246.212","201.16.246.176","192.168.1","192.168.1.20","192.168.1.153"]
+    return ["189.4.3.5",
+            "201.16.246.212",
+            "201.16.246.176",
+            "192.168.1",
+            "192.168.1.20",
+            "192.168.1.153"]
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:

@@ -23,7 +23,7 @@ class contatoSiteModel(object):
             count += 1
         keys += ')'
         values += ')'
-        query = 'INSERT INTO contato_site {} VALUES {}'.format(keys, values)
+        query = 'INSERT INTO contatos_site {} VALUES {}'.format(keys, values)
         return self.conn.add(query)
 
     def update_id(self, data, id):
@@ -39,11 +39,25 @@ class contatoSiteModel(object):
         qu = 'UPDATE contato_site set {} where id = {}'.format(valor, str(id))
         return self.conn.update(qu)
 
+    def update_id_in(self, data, ids):
+        if isinstance(data, str):
+            valor = data
+        else:
+            valor = ''
+            count = 0
+            for k, v in data.items():
+                if count > 0:
+                    valor += ', '
+                valor += k + '= "' + str(v) + '"'
+        qu = 'UPDATE contatos_site set {} where id IN ({})'.format(valor, str(ids))
+        print(qu)
+        return self.conn.update(qu)
+
     def delete_id(self, id):
-        q = 'SELECT id from contato_site where id = {} '.format(str(id))
+        q = 'SELECT id from contatos_site where id = {} '.format(str(id))
         a = len(self.conn.get(q))
         if a > 0:
-            que = 'DELETE from contato_site where id = {}'.format(str(id))
+            que = 'DELETE from contatos_site where id = {}'.format(str(id))
             self.conn.delete(que)
             if len(self.conn.get(q)) == 0:
                 return True

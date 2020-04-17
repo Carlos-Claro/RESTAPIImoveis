@@ -55,7 +55,7 @@ class myMongo(object):
 
     # data array: [where, limit, skip, sort, ]
     def get_itens(self,collection,data):
-        print(data)
+        # print(data)
         coll = self.db[collection]
         if 'where' in data:
             cursor = coll.find(data['where'])

@@ -18,7 +18,14 @@ class Contato_site(object):
     def getContatos(self):
         return self.contatoSiteModel.getItensDisparo(request.args)
 
+    def update_sincronizado(self):
+        ids = request.args['ids']
+        print(ids)
+        return self.contatoSiteModel.update_id_in({'sincronizado': 1}, ids)
 
+    def update_desincronizado(self):
+        ids = request.args['ids']
+        return self.contatoSiteModel.update_id_in({'sincronizado': 0}, ids)
 
 
 if __name__ == '__main__':
