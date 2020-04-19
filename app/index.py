@@ -159,8 +159,8 @@ def imoveis_images_gerar(limit):
     imoveis = Imoveis()
     return jsonify(imoveis.imagesGerarMongo(limit))
 
+# @basic_auth.required
 @app.route('/imoveismongo',methods=['GET','POST'])
-@basic_auth.required
 def imoveismongo():
     retorno = {}
     imoveis = Imoveis()
@@ -175,8 +175,8 @@ def imoveismongo():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+# @basic_auth.required
 @app.route('/imoveismongo/<id>',methods=['GET'])
-@basic_auth.required
 def imoveismongo_(id):
     retorno = {}
     imoveis = Imoveis()
