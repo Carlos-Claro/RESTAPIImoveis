@@ -180,7 +180,7 @@ class Imoveis(object):
             retorno['where'] = self.getWhere(args)
         return retorno
     isfloat = []
-    isint = ['quartos','garagens']
+    isint = ['quartos','garagens','id_tipo','cidades_id']
     
     def getOrdenacao(self,data):
         coluna = 'ordem'

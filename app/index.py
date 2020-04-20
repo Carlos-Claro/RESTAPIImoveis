@@ -382,8 +382,10 @@ def before_request():
     elif request.remote_addr in lista_ip():
         pass
     else:
+        print(basic_auth.check_credentials())
         retorno = {}
-        retorno['message'] = 'kill by host'
+        retorno['status'] = False
+        retorno['message'] = 'bloqueio de usuário, por falta de credenciais'
         status_r = status.HTTP_401_UNAUTHORIZED
         return jsonify(retorno), status_r
 
