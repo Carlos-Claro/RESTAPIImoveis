@@ -9,6 +9,7 @@ import json
 
 from controller.Cadastros import Cadastros
 
+
 sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
@@ -17,8 +18,14 @@ from controller.Log import Log
 from controller.Cidades import Cidades
 from controller.Imoveis_relevancia import Imoveis_relevancia
 from controller.Contato_site import Contato_site
+from controller.Clientes_cadastros import Clientes_cadastros
+from controller.Clientes_carrinhos import Clientes_carrinhos
+from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
+from controller.Produtos import Produtos
 
 from controller.Tempo import Tempo
+from library.Exception import RequestInvalido, RequestIncompleto
+from library.Exception import RequestRetornaZeroItens
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
@@ -352,6 +359,243 @@ def contatos_site_desincronizado():
 
 
 ########################################
+    # Clientes Cadastros & cia    #
+########################################
+
+##
+# clientes cadastros
+# # GET
+# id_empresa obrigatório
+# limit, offset
+# demais filtros
+##
+@app.route('/clientes_cadastros/',methods=['GET','POST','DELETE'])
+def get_clientes_cadastros():
+    retorno = {}
+    clientes = Clientes_cadastros()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = clientes.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        retorno = clientes.delete()
+        print('delete')
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = clientes.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/clientes_cadastros/<id>/<id_empresa>',methods=['GET','PUT'])
+def clientes_cadastros_(id, id_empresa):
+    retorno = {}
+    clientes = Clientes_cadastros()
+    if request.method == 'GET':
+        retorno = clientes.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = clientes.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+##
+# clientes carrinhos
+# # GET
+# id_empresa obrigatório
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/clientes_carrinhos/',methods=['GET','POST','DELETE'])
+def clientes_carrinhos():
+    retorno = {}
+    carrinhos = Clientes_carrinhos()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = carrinhos.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = carrinhos.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = carrinhos.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/clientes_carrinhos/<id>/<id_empresa>',methods=['GET','PUT'])
+def clientes_carrinhos_(id, id_empresa):
+    retorno = {}
+    carrinhos = Clientes_carrinhos()
+    if request.method == 'GET':
+        retorno = carrinhos.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = carrinhos.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+@app.route('/clientes_carrinhos_completo/',methods=['GET','POST','DELETE'])
+def clientes_carrinhos_completo():
+    retorno = {}
+    carrinhos = Clientes_carrinhos()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = carrinhos.getCompleto()
+        except:
+            status_r = status.HTTP_404_NOT_FOUND
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = False
+    return jsonify(retorno), status_r
+
+
+
+##
+# clientes carrinhos produtos
+# # GET
+# id_empresa obrigatório
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/clientes_carrinhos_produtos/',methods=['GET','POST','DELETE'])
+def clientes_carrinhos_produtos():
+    retorno = {}
+    carrinhos_produtos = Clientes_carrinhos_produtos()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = carrinhos_produtos.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = carrinhos_produtos.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = carrinhos_produtos.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/clientes_carrinhos_produtos/<id>/<id_empresa>',methods=['GET','PUT'])
+def clientes_carrinhos_produtos_(id, id_empresa):
+    retorno = {}
+    carrinhos_produtos = Clientes_carrinhos_produtos()
+    if request.method == 'GET':
+        retorno = carrinhos_produtos.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = carrinhos_produtos.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+##
+# clientes produtos
+# # GET
+# id_empresa obrigatório
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/produtos/',methods=['GET','POST','DELETE'])
+def produtos():
+    retorno = {}
+    produtos = Produtos()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = produtos.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = produtos.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = produtos.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/produtos/<id>/<id_empresa>',methods=['GET','PUT'])
+def produtos_(id, id_empresa):
+    retorno = {}
+    produtos = Produtos()
+    if request.method == 'GET':
+        retorno = produtos.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = produtos.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+
+########################################
     # Requests app Tempo Malhada    #
 ########################################
 
@@ -373,16 +617,20 @@ def page_not_found(error):
 @app.app.before_request
 def before_request():
     if request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
+        print('options')
         retorno = {}
         retorno['message'] = 'Use Authorization to access the content'
         status_r = status.HTTP_200_OK
         return jsonify(retorno), status_r
     elif basic_auth.authenticate():
+        print('basic')
         pass
     elif request.remote_addr in lista_ip():
+        print('remote')
         pass
     else:
         print(basic_auth.check_credentials())
+        print('nao autorizado')
         retorno = {}
         retorno['status'] = False
         retorno['message'] = 'bloqueio de usuário, por falta de credenciais'
@@ -394,7 +642,7 @@ def lista_ip():
     return ["189.4.3.5",
             "201.16.246.212",
             "201.16.246.176",
-            "192.168.1",
+            # "192.168.1",
             "192.168.1.20",
             "192.168.1.153",
             "189.39.42.133",

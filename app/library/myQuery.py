@@ -4,7 +4,49 @@ class myQuery(object):
     
     def __init__(self):
         self.tipo = 'string'            
-    
+
+    def add(self, table, data):
+        count = 0
+        keys = '('
+        values = '('
+        for k, v in data.items():
+            if count > 0:
+                keys += ', '
+                values += ', '
+            keys += str(k)
+            values += '"' + str(v) + '"'
+            count += 1
+        keys += ')'
+        values += ')'
+        query = 'INSERT INTO {} {} VALUES {}'.format(table, keys, values)
+        return query
+
+    def update(self, table, data, id):
+        if isinstance(data, str):
+            valor = data
+        else:
+            valor = ''
+            count = 0
+            for k, v in data.items():
+                if count > 0:
+                    valor += ', '
+                count += 1
+                valor += k + '= "' + str(v) + '"'
+        return 'UPDATE {} set {} where id = {}'.format(table, valor, str(id))
+
+    def update_in(self,table,data,ids):
+        if isinstance(data, str):
+            valor = data
+        else:
+            valor = ''
+            count = 0
+            for k, v in data.items():
+                if count > 0:
+                    valor += ', '
+                count += 1
+                valor += k + '= "' + str(v) + '"'
+        qu = 'UPDATE {} set {} where id IN ({})'.format(table, valor, str(ids))
+
     def get(self,query):
         retorno = ''
         if isinstance(query,str):
@@ -78,6 +120,15 @@ class myQuery(object):
                                 else:
                                     retorno += where['campo'] + ' = ' + where['valor']
                     count_where += 1
+        return retorno
+
+    def getFiltro(self,data, filtros):
+        retorno = []
+        for k,v in data.items():
+            if k in filtros:
+                array = filtros[k]
+                array['valor'] = v
+                retorno.append(array)
         return retorno
 
 if __name__ == '__main__':
