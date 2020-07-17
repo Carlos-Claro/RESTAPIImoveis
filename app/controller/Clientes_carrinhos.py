@@ -14,6 +14,7 @@ import time
 import datetime
 
 from library.Exception import RequestRetornaZeroItens
+from library.Exception import RequestInvalido
 
 class Clientes_carrinhos(object):
 
@@ -25,6 +26,24 @@ class Clientes_carrinhos(object):
         if request.content_length > 0:
             return self.clientesCarrinhosModel.add(data)
         return False
+
+    def addCompleto(self):
+        data = request.get_json()
+        if 'id_empresa' not in data:
+            raise RequestInvalido('Nenhuma empresa associada ao carrinho')
+        id_empresa = data['id_empresa']
+        del data['id_empresa']
+        produtos = []
+        if 'produtos' in data:
+            produtos = data['produtos']
+            del data['produtos']
+        id = self.clientesCarrinhosModel.add(data)
+        if len(produtos):
+            carrinhosProdutos = clientesCarrinhosProdutosModel()
+            for p in produtos:
+                p['id_clientes_carrinhos'] = str(id)
+                carrinhosProdutos.add(p)
+        return self.getItemCompleto(str(id),str(id_empresa))
 
     def requestItems(self):
         data = {}
@@ -39,13 +58,28 @@ class Clientes_carrinhos(object):
     def getCompleto(self):
         data = self.requestItems()
         carrinhos = self.clientesCarrinhosModel.getItens(data)
-        print(carrinhos)
         retorno = []
         if carrinhos['total']:
             carrinhosProdutosModel = clientesCarrinhosProdutosModel()
             for i in carrinhos['itens']:
                 filtro = {}
                 filtro["id_empresa"] = data['id_empresa']
+                filtro["id_clientes_carrinhos"] = str(i['id'])
+                filtro["limit"] = 1000
+                i['produtos'] = carrinhosProdutosModel.getItensCompleto(filtro)
+                retorno.append(i)
+        else:
+            raise RequestRetornaZeroItens('Nenhum item retornado para carrinho completo')
+        return retorno
+
+    def getItemCompleto(self, id, id_empresa):
+        item = self.clientesCarrinhosModel.getItem(id,id_empresa)
+        retorno = []
+        if len(item):
+            carrinhosProdutosModel = clientesCarrinhosProdutosModel()
+            for i in item:
+                filtro = {}
+                filtro["id_empresa"] = id_empresa
                 filtro["id_clientes_carrinhos"] = str(i['id'])
                 filtro["limit"] = 1000
                 i['produtos'] = carrinhosProdutosModel.getItensCompleto(filtro)
@@ -76,6 +110,8 @@ class Clientes_carrinhos(object):
             if len(item):
                 return self.clientesCarrinhosModel.delete_id(data['id'])
         return False
+
+
 
 
 

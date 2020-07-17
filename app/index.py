@@ -468,7 +468,7 @@ def clientes_carrinhos_(id, id_empresa):
             status_r = status.HTTP_304_NOT_MODIFIED
     return jsonify(retorno), status_r
 
-@app.route('/clientes_carrinhos_completo/',methods=['GET','POST','DELETE'])
+@app.route('/clientes_carrinhos_completo/',methods=['GET','POST'])
 def clientes_carrinhos_completo():
     retorno = {}
     carrinhos = Clientes_carrinhos()
@@ -476,6 +476,29 @@ def clientes_carrinhos_completo():
     if request.method == 'GET':
         try:
             retorno = carrinhos.getCompleto()
+        except:
+            status_r = status.HTTP_404_NOT_FOUND
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'POST':
+        try:
+            retorno = carrinhos.addCompleto()
+            status_r = status.HTTP_201_CREATED
+        except Exception as err :
+            print(err)
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = False
+    return jsonify(retorno), status_r
+
+@app.route('/clientes_carrinhos_completo/<id>/<id_empresa>',methods=['GET'])
+def clientes_carrinhos_completo_(id,id_empresa):
+    retorno = {}
+    carrinhos = Clientes_carrinhos()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = carrinhos.getItemCompleto(id,id_empresa)
         except:
             status_r = status.HTTP_404_NOT_FOUND
         if retorno is False:
