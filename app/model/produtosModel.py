@@ -51,7 +51,6 @@ class ProdutosModel(object):
             {'tipo': 'where', 'campo': 'empresas.id', 'valor': id_empresa},
         ]
         q = self.query.get(query)
-        print(q)
         itens = self.conn.get(q)
         # todo
         # Retornar todos os itens, quando estiver com o model correspondente criado

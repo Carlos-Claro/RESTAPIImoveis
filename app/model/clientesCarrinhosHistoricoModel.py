@@ -6,13 +6,14 @@ import sys
 from library.Exception import RequestIncompleto
 from library.Logs import Logs
 
+from model.produtosModel import ProdutosModel
 
-class clientesCarrinhosModel(object):
+class clientesCarrinhosHistoricoModel(object):
 
     def __init__(self):
         self.conn = myMysql()
         self.query = myQuery()
-        self.table = 'clientes_carrinhos'
+        self.table = 'clientes_carrinhos_historico'
 
     def add(self, data):
         query = self.query.add(self.table,data)
@@ -37,22 +38,20 @@ class clientesCarrinhosModel(object):
                 return True
         return False
 
-    def getItem(self, id, id_empresa):
+    def getItem(self, id):
         query = {}
-        query['colunas'] = 'clientes_carrinhos.*, clientes_carrinhos_status.titulo as status'
+        query['colunas'] = 'clientes_carrinhos_historico.*'
         query['tabela'] = self.table
         query['join'] = [
+            {'tabela': 'clientes_carrinhos', 'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
             {'tabela': 'clientes_cadastros', 'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
-            {'tabela': 'clientes_carrinhos_status',
-             'where': 'clientes_carrinhos_status.id = clientes_carrinhos.id_status', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
         ]
         d = datetime.datetime.now().strftime('%Y-%m-%d')
         now = datetime.datetime.now()
         t = datetime.datetime.timestamp(now)
         query['where'] = [
-            {'tipo': 'where', 'campo': 'clientes_carrinhos.id', 'valor': id},
-            {'tipo': 'where', 'campo': 'clientes_cadastros.id_empresa', 'valor': id_empresa},
+            {'tipo': 'where', 'campo': 'clientes_carrinhos_historico.id', 'valor': id},
         ]
         q = self.query.get(query)
         itens = self.conn.get(q)
@@ -61,16 +60,15 @@ class clientesCarrinhosModel(object):
         return itens
 
 
-
     def getItens(self, data):
         query = {}
-        query['colunas'] = 'clientes_carrinhos.*, clientes_carrinhos_status.titulo as status'
+        query['colunas'] = 'clientes_carrinhos_historico.*'
         query['tabela'] = self.table
         query['join'] = [
-            {'tabela': 'clientes_cadastros', 'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id',
-             'tipo': 'INNER'},
-            {'tabela': 'clientes_carrinhos_status',
-             'where': 'clientes_carrinhos_status.id = clientes_carrinhos.id_status', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_historico',
+             'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
+            {'tabela': 'clientes_cadastros',
+             'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
         ]
         query['offset'] = 0
@@ -81,22 +79,14 @@ class clientesCarrinhosModel(object):
         if 'limit' in data:
             query['limit'] = data['limit']
             del data['limit']
-        query['where'] = self.query.getFiltro(data, self.filtros)
-        if 'id_empresa' not in data:
-            message = 'O campo id_empresa é obrigatório.'
-            erro = {
-                'formato': 'geral',
-                'arquivo': 'log',
-                'data': {
-                    'data': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'message': message
-                }
-            }
-            Logs(erro)
-            raise RequestIncompleto(message)
-        query['group'] = 'clientes_carrinhos.id'
-        query['ordem'] = 'clientes_carrinhos.id DESC'
-        q = self.query.get(query)
+        query['where'] = self.query.getFiltro(data,self.filtros)
+
+        query['group'] = 'clientes_carrinhos_historico.id'
+        query['ordem'] = 'clientes_carrinhos_historico.id DESC'
+        try:
+            q = self.query.get(query)
+        except Exception as err:
+            print(err)
         itens = {}
         itens['itens'] = self.conn.get(q)
         itens['total'] = 0
@@ -106,29 +96,26 @@ class clientesCarrinhosModel(object):
 
     def getTotalItens(self, where):
         query = {}
-        query['colunas'] = 'count(clientes_carrinhos.id) as qtde'
+        query['colunas'] = 'count(clientes_carrinhos_historico.id) as qtde'
         query['tabela'] = self.table
         query['join'] = [
+            {'tabela': 'clientes_carrinhos_historico',
+             'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
             {'tabela': 'clientes_cadastros',
-             'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id',
-             'tipo': 'INNER'},
-            {'tabela': 'clientes_carrinhos_status',
-             'where': 'clientes_carrinhos_status.id = clientes_carrinhos.id_status', 'tipo': 'INNER'},
+             'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
         ]
         query['where'] = where
-        query['group'] = 'clientes_cadastros.id_empresa'
+        query['group'] = 'clientes_carrinhos_historico.id'
         q = self.query.get(query)
         itens = self.conn.get(q)
         return itens[0]['qtde']
 
     filtros = {
         'id_empresa': {'tipo': 'where', 'campo': 'empresas.id'},
-        'id': {'tipo': 'where', 'campo': 'clientes_carrinhos.id'},
+        'id': {'tipo': 'where', 'campo': 'clientes_carrinhos_historico.id'},
+        'id_clientes_carrinhos': {'tipo': 'where', 'campo': 'clientes_carrinhos_historico.id_clientes_carrinhos'},
     }
-
-
-
 
 if __name__ == '__main__':
     print('')

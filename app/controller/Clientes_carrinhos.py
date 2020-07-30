@@ -58,8 +58,9 @@ class Clientes_carrinhos(object):
     def getCompleto(self):
         data = self.requestItems()
         carrinhos = self.clientesCarrinhosModel.getItens(data)
-        retorno = []
+        retorno = {'itens':[],'qtde_total':0,'valor_total':0}
         if carrinhos['total']:
+            retorno['qtde_total'] = carrinhos['total']
             carrinhosProdutosModel = clientesCarrinhosProdutosModel()
             for i in carrinhos['itens']:
                 filtro = {}
@@ -67,7 +68,8 @@ class Clientes_carrinhos(object):
                 filtro["id_clientes_carrinhos"] = str(i['id'])
                 filtro["limit"] = 1000
                 i['produtos'] = carrinhosProdutosModel.getItensCompleto(filtro)
-                retorno.append(i)
+                retorno['valor_total'] += i['valor_total']
+                retorno['itens'].append(i)
         else:
             raise RequestRetornaZeroItens('Nenhum item retornado para carrinho completo')
         return retorno
@@ -110,9 +112,6 @@ class Clientes_carrinhos(object):
             if len(item):
                 return self.clientesCarrinhosModel.delete_id(data['id'])
         return False
-
-
-
 
 
 if __name__ == '__main__':

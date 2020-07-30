@@ -6,26 +6,29 @@ import sys, os
 from flask_cors import CORS
 from flask_basicauth import BasicAuth
 import json
-
-from controller.Cadastros import Cadastros
-
+# from flask_bcrypt import Bcrypt
+# from simplecrypt import encrypt, decrypt
 
 sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
 from controller.Imoveis import Imoveis
 from controller.Log import Log
-from controller.Cidades import Cidades
 from controller.Imoveis_relevancia import Imoveis_relevancia
-from controller.Contato_site import Contato_site
+from controller.Cadastros import Cadastros
+from controller.Cidades import Cidades
 from controller.Clientes_cadastros import Clientes_cadastros
 from controller.Clientes_carrinhos import Clientes_carrinhos
 from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
+from controller.clientes_carrinhos_historico import Clientes_carrinhos_historico
+from controller.Contato_site import Contato_site
 from controller.Produtos import Produtos
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
 from library.Exception import RequestRetornaZeroItens
+
+
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
@@ -42,6 +45,9 @@ app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
 # app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
 
+# bcrypt = Bcrypt(app.app)
+# pw_hash = bcrypt.generate_password_hash(data['basic']['passwd'])
+# print(bcrypt.check_password_hash(pw_hash, data['basic']['passwd'])) # returns True
 
 @app.route('/')
 @basic_auth.required
@@ -563,6 +569,64 @@ def clientes_carrinhos_produtos_(id, id_empresa):
             status_r = status.HTTP_304_NOT_MODIFIED
     return jsonify(retorno), status_r
 
+
+
+##
+# clientes carrinhos historico
+# # GET
+# id_empresa obrigatório
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/clientes_carrinhos_historico/',methods=['GET','POST','DELETE'])
+def clientes_carrinhos_historico():
+    retorno = {}
+    carrinhos_historico = Clientes_carrinhos_historico()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = carrinhos_historico.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = carrinhos_historico.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = carrinhos_historico.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/clientes_carrinhos_historico/<id>/<id_empresa>',methods=['GET','PUT'])
+def clientes_carrinhos_historico_(id, id_empresa):
+    retorno = {}
+    carrinhos_historico = Clientes_carrinhos_historico()
+    if request.method == 'GET':
+        retorno = carrinhos_historico.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = carrinhos_historico.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+
+
 ##
 # clientes produtos
 # # GET
@@ -618,6 +682,8 @@ def produtos_(id, id_empresa):
     return jsonify(retorno), status_r
 
 
+
+
 ########################################
     # Requests app Tempo Malhada    #
 ########################################
@@ -629,6 +695,25 @@ def tempo_malhada():
     retorno = tempo.add_tempo()
     return jsonify(retorno) 
 
+########################################
+    # teste    #
+########################################
+
+@app.route('/test_encrypt/',methods=['GET'])
+def test_encrypt():
+    # print(data['basic'])
+    # ciphertext = encrypt(data['basic']['passwd'], 'my secret message')
+    # print(ciphertext)
+    # plaintext = decrypt(data['basic']['passwd'], ciphertext)
+    # print(plaintext)
+    # print(data['basic']['key'])
+    return jsonify([])
+
+
+########################################
+    # Requests preparação    #
+########################################
+
 @app.app.errorhandler(401)
 def page_not_found(error):
     print(basic_auth.check_credentials())
@@ -639,15 +724,15 @@ def page_not_found(error):
 
 @app.app.before_request
 def before_request():
-    if request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
+    if basic_auth.authenticate():
+        print('basic')
+        pass
+    elif request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
         print('options')
         retorno = {}
         retorno['message'] = 'Use Authorization to access the content'
         status_r = status.HTTP_200_OK
         return jsonify(retorno), status_r
-    elif basic_auth.authenticate():
-        print('basic')
-        pass
     elif request.remote_addr in lista_ip():
         print('remote')
         pass
