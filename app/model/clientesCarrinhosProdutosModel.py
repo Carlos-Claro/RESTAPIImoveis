@@ -73,7 +73,9 @@ class clientesCarrinhosProdutosModel(object):
 
     def getItens(self, data):
         query = {}
-        query['colunas'] = 'clientes_carrinhos_produtos.*'
+        query['colunas'] = 'clientes_carrinhos_produtos.*,' \
+                           'ofer_lanc_serv.tipo1 as preco,' \
+                           'ofer_lanc_serv.nome as nome'
         query['tabela'] = self.table
         query['join'] = [
             {'tabela': 'clientes_carrinhos',
@@ -120,7 +122,12 @@ class clientesCarrinhosProdutosModel(object):
 
     def getTotalItens(self, where):
         query = {}
-        query['colunas'] = 'count(clientes_carrinhos_produtos.id) as qtde'
+        query['colunas'] = '' \
+                           'count(clientes_carrinhos_produtos.id) as qtde' \
+                           ', sum(clientes_carrinhos_produtos.valor_total_com_desconto) as valor_total_com_desconto' \
+                           ', sum(clientes_carrinhos_produtos.valor_total_bruto) as valor_total' \
+                           ', (sum(clientes_carrinhos_produtos.valor_total_bruto) - sum(clientes_carrinhos_produtos.valor_total_com_desconto)) as desconto' \
+                           ''
         query['tabela'] = self.table
         query['join'] = [
             {'tabela': 'clientes_carrinhos',
@@ -132,10 +139,10 @@ class clientesCarrinhosProdutosModel(object):
              'tipo': 'INNER'},
         ]
         query['where'] = where
-        query['group'] = 'clientes_carrinhos_produtos.id'
+        query['group'] = 'clientes_carrinhos_produtos.id_clientes_carrinhos'
         q = self.query.get(query)
         itens = self.conn.get(q)
-        return itens[0]['qtde']
+        return itens[0]
 
     filtros = {
         'id_empresa': {'tipo': 'where', 'campo': 'empresas.id'},

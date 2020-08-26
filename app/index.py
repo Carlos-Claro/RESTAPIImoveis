@@ -20,7 +20,7 @@ from controller.Cidades import Cidades
 from controller.Clientes_cadastros import Clientes_cadastros
 from controller.Clientes_carrinhos import Clientes_carrinhos
 from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
-from controller.clientes_carrinhos_historico import Clientes_carrinhos_historico
+from controller.Clientes_carrinhos_historico import Clientes_carrinhos_historico
 from controller.Contato_site import Contato_site
 from controller.Produtos import Produtos
 
