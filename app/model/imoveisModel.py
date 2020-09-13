@@ -230,7 +230,7 @@ class imoveisModel(object):
         query['ordem'] = 'imoveis_images.data ASC'
         query['where'] = 'imoveis_images.id_empresa = "{}"'.format(str(id))
         query['where'] += 'AND imoveis_images.arquivo like "%http://%"'
-        query['limit'] = 100
+        query['limit'] = 1000
         q = self.query.get(query)
         return self.conn.get(q)
     
