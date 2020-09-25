@@ -625,6 +625,38 @@ def clientes_carrinhos_historico_(id, id_empresa):
             status_r = status.HTTP_304_NOT_MODIFIED
     return jsonify(retorno), status_r
 
+##
+# clientes carrinhos historico_ com update
+# # POST
+# data.clientes_carrinhos = {'data':{
+#         'status_pagamento': $event.status,
+#         'id_tipo_pagamento':$event.tipo_pagamento,
+#         'complemento_tipo_pagamento':$event.complemento_pagamento
+#       },'filtro':{
+#         'id':this.id_clientes_carrinhos
+#       }};
+#       data.clientes_carrinhos_historico = {'data':{
+#         'id_clientes_carrinhos': this.id_clientes_carrinhos,
+#         'descricao':$event.descricao,
+#         'id_status':$event.status,
+#         'id_usuario':$('.id_usuario').val()
+#       }};
+#
+##
+@app.route('/clientes_carrinhos_historico_update/',methods=['POST'])
+def clientes_carrinhos_historico_update():
+    retorno = False
+    carrinhos_historico = Clientes_carrinhos_historico()
+    status_r = status.HTTP_200_OK
+    try:
+        retorno = carrinhos_historico.add_update()
+    except:
+        pass
+    status_r = status.HTTP_201_CREATED
+    if retorno is False:
+        status_r = status.HTTP_406_NOT_ACCEPTABLE
+    return jsonify(retorno), status_r
+
 
 
 ##
@@ -755,7 +787,8 @@ def lista_ip():
             "192.168.1.153",
             "189.39.42.133",
             "189.39.42.155",
-            "189.39.42.153"
+            "189.39.42.153",
+            "127.0.0.1"
             ]
 
 if __name__ == '__main__':

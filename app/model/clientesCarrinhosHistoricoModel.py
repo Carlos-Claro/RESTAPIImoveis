@@ -21,7 +21,6 @@ class clientesCarrinhosHistoricoModel(object):
 
     def update_id(self, data, id):
         query = self.query.update(self.table, data, id)
-        print(query)
         return self.conn.update(query)
 
     def update_id_in(self, data, ids):
@@ -40,10 +39,14 @@ class clientesCarrinhosHistoricoModel(object):
 
     def getItem(self, id):
         query = {}
-        query['colunas'] = 'clientes_carrinhos_historico.*'
+        query['colunas'] = 'clientes_carrinhos_historico.*' \
+                           ', clientes_carrinhos_status.titulo as status' \
+                           ', clientes_carrinhos_status.complemento as complemento'
         query['tabela'] = self.table
         query['join'] = [
             {'tabela': 'clientes_carrinhos', 'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status',
+             'where': 'clientes_carrinhos_historico.id_status = clientes_carrinhos_status.id', 'tipo': 'LEFT'},
             {'tabela': 'clientes_cadastros', 'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
         ]
@@ -62,11 +65,15 @@ class clientesCarrinhosHistoricoModel(object):
 
     def getItens(self, data):
         query = {}
-        query['colunas'] = 'clientes_carrinhos_historico.*'
+        query['colunas'] = 'clientes_carrinhos_historico.*' \
+                           ', clientes_carrinhos_status.titulo as status' \
+                           ', clientes_carrinhos_status.complemento as complemento'
         query['tabela'] = self.table
         query['join'] = [
-            {'tabela': 'clientes_carrinhos_historico',
+            {'tabela': 'clientes_carrinhos',
              'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status',
+             'where': 'clientes_carrinhos_historico.id_status = clientes_carrinhos_status.id', 'tipo': 'LEFT'},
             {'tabela': 'clientes_cadastros',
              'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
@@ -99,8 +106,10 @@ class clientesCarrinhosHistoricoModel(object):
         query['colunas'] = 'count(clientes_carrinhos_historico.id) as qtde'
         query['tabela'] = self.table
         query['join'] = [
-            {'tabela': 'clientes_carrinhos_historico',
+            {'tabela': 'clientes_carrinhos',
              'where': 'clientes_carrinhos_historico.id_clientes_carrinhos = clientes_carrinhos.id', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status',
+             'where': 'clientes_carrinhos_historico.id_status = clientes_carrinhos_status.id', 'tipo': 'LEFT'},
             {'tabela': 'clientes_cadastros',
              'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
@@ -115,8 +124,10 @@ class clientesCarrinhosHistoricoModel(object):
         'id_empresa': {'tipo': 'where', 'campo': 'empresas.id'},
         'id': {'tipo': 'where', 'campo': 'clientes_carrinhos_historico.id'},
         'id_clientes_carrinhos': {'tipo': 'where', 'campo': 'clientes_carrinhos_historico.id_clientes_carrinhos'},
+        'tipo_status': {'tipo': 'where', 'campo': 'clientes_carrinhos_status.status'},
     }
 
 if __name__ == '__main__':
     print('')
+
 

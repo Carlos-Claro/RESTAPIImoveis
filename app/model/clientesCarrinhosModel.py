@@ -20,7 +20,6 @@ class clientesCarrinhosModel(object):
 
     def update_id(self, data, id):
         query = self.query.update(self.table, data, id)
-        print(query)
         return self.conn.update(query)
 
     def update_id_in(self, data, ids):
@@ -64,13 +63,23 @@ class clientesCarrinhosModel(object):
 
     def getItens(self, data):
         query = {}
-        query['colunas'] = 'clientes_carrinhos.*, clientes_carrinhos_status.titulo as status'
+        query['colunas'] = 'clientes_carrinhos.*' \
+                           ', status_geral.titulo as status' \
+                           ', status_geral.complemento as status_complemento' \
+                           ', status_pagamento.titulo as status_pagamento' \
+                           ', status_pagamento.complemento as status_pagamento_complemento' \
+                           ', status_envio.titulo as status_envio' \
+                           ', status_envio.complemento as status_envio_complemento'
         query['tabela'] = self.table
         query['join'] = [
             {'tabela': 'clientes_cadastros', 'where': 'clientes_carrinhos.id_clientes_cadastros = clientes_cadastros.id',
              'tipo': 'INNER'},
-            {'tabela': 'clientes_carrinhos_status',
-             'where': 'clientes_carrinhos_status.id = clientes_carrinhos.id_status', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status status_geral',
+             'where': 'status_geral.id = clientes_carrinhos.id_status', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status status_pagamento',
+             'where': 'status_pagamento.id = clientes_carrinhos.id_status_pagamento', 'tipo': 'INNER'},
+            {'tabela': 'clientes_carrinhos_status status_envio',
+             'where': 'status_envio.id = clientes_carrinhos.id_status_envio', 'tipo': 'INNER'},
             {'tabela': 'empresas', 'where': 'clientes_cadastros.id_empresa = empresas.id', 'tipo': 'INNER'},
         ]
         query['offset'] = 0

@@ -8,6 +8,7 @@ sys.path.append('../library')
 sys.path.append('../controller')
 sys.path.append('../model')
 from model.clientesCarrinhosHistoricoModel import clientesCarrinhosHistoricoModel
+from model.clientesCarrinhosModel import clientesCarrinhosModel
 from flask import request
 import time
 import datetime
@@ -19,12 +20,27 @@ class Clientes_carrinhos_historico(object):
 
     def __init__(self):
         self.clientesCarrinhosHistoricoModel = clientesCarrinhosHistoricoModel()
+        self.clientesCarrinhosModel = clientesCarrinhosModel()
 
     def add(self):
         data = request.get_json()
         if request.content_length > 0:
-            return self.clientesCarrinhosHistoricoModel.add(data)
+            if 'clientes_carrinhos' in data:
+                update = self.clientesCarrinhosModel.update_id(data['clientes_carrinhos']['data'],data['clientes_carrinhos']['filtro']['id'])
+            return self.clientesCarrinhosHistoricoModel.add(data['clientes_carrinhos_historico']['data'])
         return False
+
+    def add_update(self):
+        data = request.get_json()
+        print(data)
+        if request.content_length > 0:
+            if 'clientes_carrinhos' in data:
+                update = self.clientesCarrinhosModel.update_id(data['clientes_carrinhos']['data'],
+                                                               data['clientes_carrinhos']['filtro']['id'])
+            return self.clientesCarrinhosHistoricoModel.add(data['clientes_carrinhos_historico']['data'])
+        return False
+
+
 
     def requestItems(self):
         data = {}
