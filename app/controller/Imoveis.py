@@ -45,10 +45,10 @@ class Imoveis(object):
         for i in a:
             ids.append(i)
         data = {}
-        print(ids)
+        # print(ids)
         data['where'] = {'id_' : {'$in':ids}, 'id_empresa':str(id_empresa), 'cidades_id': {'$in': ['9730', '2', '10', '4', '5', '27','1']} }
         value = self.myMongo.get_itens('imoveis',data)
-        print(value)
+        # print(value)
         if len(ids) == value['qtde'] :
             res = {'deleta':False}
         else:
@@ -135,7 +135,7 @@ class Imoveis(object):
         alt = {}
         for k,v in data.items():
             if 'tem_foto' in k:
-                print('tem_ft')
+                # print('tem_ft')
                 alt[k] = bool(v)
             else:
                 alt[k] = v
@@ -170,12 +170,12 @@ class Imoveis(object):
         if 'coluna' in args or 'ordem' in args:
             ordem = self.getOrdenacao(args);
             retorno['sort'] = {ordem[0]:ordem[1]}
-            print(retorno['sort'])
+            # print(retorno['sort'])
             if 'coluna' in args:
                 del args['coluna']
             if 'ordem' in args:
                 del args['ordem']
-        print(args)
+        # print(args)
         if len(args) > 0:
             retorno['where'] = self.getWhere(args)
         return retorno
@@ -219,7 +219,7 @@ class Imoveis(object):
     def getWhere(self,itens):
         retorno = {}
         for chave,valor in itens.items():
-            print(chave)
+            # print(chave)
             if chave in self.isint:
                 v,isin = self.getItemVirgula(valor,'int')
             else :
