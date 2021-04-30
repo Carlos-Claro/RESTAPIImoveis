@@ -3,8 +3,7 @@ mysql-connector
 connexion
 connexion[swagger-ui]
 pymongo
-request
-pprint
+requests
 python-resize-image
 flask_api
 flask-cors

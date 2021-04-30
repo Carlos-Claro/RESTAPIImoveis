@@ -23,6 +23,8 @@ from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
 from controller.Clientes_carrinhos_historico import Clientes_carrinhos_historico
 from controller.Contato_site import Contato_site
 from controller.Produtos import Produtos
+from controller.Google_search import Google_search
+from controller.Google_search_terms import Google_search_terms
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
@@ -716,6 +718,116 @@ def produtos_(id, id_empresa):
 
 
 
+##
+# google search
+# # GET
+#
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/google_search/',methods=['GET','POST','DELETE'])
+def google_search():
+    retorno = {}
+    google_search = Google_search()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = google_search.get()
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = google_search.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = google_search.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/google_search/<id>',methods=['GET','PUT'])
+def google_search_(id, id_empresa):
+    retorno = {}
+    google_search = Google_search()
+    if request.method == 'GET':
+        retorno = google_search.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = google_search.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+
+##
+# google search terms
+# # GET
+#
+# limit, offset
+# demais filtros
+# @return
+#
+##
+@app.route('/google_search_terms/',methods=['GET','POST','DELETE'])
+def google_search_terms():
+    retorno = {}
+    google_search_terms = Google_search_terms()
+    status_r = status.HTTP_200_OK
+    if request.method == 'GET':
+        try:
+            retorno = json.loads(google_search_terms.get())
+        except RequestIncompleto:
+            status_r = status.HTTP_304_NOT_MODIFIED
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    elif request.method == 'DELETE':
+        print('deleete')
+        retorno = google_search_terms.delete()
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    else:
+        try:
+            retorno = google_search_terms.add()
+        except:
+            pass
+        status_r = status.HTTP_201_CREATED
+        if retorno is False:
+            status_r = status.HTTP_200_OK
+    return jsonify(retorno), status_r
+
+
+@app.route('/google_search/<id>',methods=['GET','PUT'])
+def google_search_terms_(id, id_empresa):
+    retorno = {}
+    google_search_terms = Google_search_terms()
+    if request.method == 'GET':
+        retorno = google_search_terms.getItem(id, id_empresa)
+        status_r = status.HTTP_200_OK
+        if retorno is False:
+            status_r = status.HTTP_204_NO_CONTENT
+    else:
+        retorno = google_search_terms.update(id, id_empresa)
+        status_r = status.HTTP_202_ACCEPTED
+        if retorno is False:
+            status_r = status.HTTP_304_NOT_MODIFIED
+    return jsonify(retorno), status_r
+
+
 ########################################
     # Requests app Tempo Malhada    #
 ########################################
@@ -757,16 +869,13 @@ def page_not_found(error):
 @app.app.before_request
 def before_request():
     if basic_auth.authenticate():
-        print('basic')
         pass
     elif request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
-        print('options')
         retorno = {}
         retorno['message'] = 'Use Authorization to access the content'
         status_r = status.HTTP_200_OK
         return jsonify(retorno), status_r
     elif request.remote_addr in lista_ip():
-        print('remote')
         pass
     else:
         print(basic_auth.check_credentials())
