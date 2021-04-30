@@ -83,7 +83,7 @@ class imoveisRelevanciaModel(object):
         query = {}
         query['colunas'] = '*'
         query['tabela'] = 'imoveis_relevancia'
-        print(data)
+        # print(data)
         where = []
         for k,v in data.items():
             var = {'tipo': 'where', 'valor':v, 'campo':k}
