@@ -174,6 +174,17 @@ def imoveis_images_gerar(limit):
     imoveis = Imoveis()
     return jsonify(imoveis.imagesGerarMongo(limit))
 
+@app.route('/portal_main',methods=['GET'])
+def portal_main():
+    retorno = {}
+    imoveis = Imoveis()
+    data = request.args
+    retorno = imoveis.mongoGetTituloQtde(data)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
 # @basic_auth.required
 @app.route('/imoveismongo',methods=['GET','POST'])
 def imoveismongo():

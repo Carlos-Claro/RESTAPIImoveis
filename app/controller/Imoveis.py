@@ -151,9 +151,44 @@ class Imoveis(object):
     def mongoGet(self, data):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
+        retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
+        retorno['titulo'] = self.getTitulo(pesquisa)
         retorno['itens'] = self.myMongo.get_itens('imoveis',pesquisa)
-        retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis',pesquisa)
         return retorno
+
+    # array com ['limit', ''skip', coluna, ordem]
+    #
+    #
+    def mongoGetTituloQtde(self, data):
+        retorno = {}
+        pesquisa = self.setDataPesquisa(data)
+        print(pesquisa)
+        retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
+        retorno['titulo'] = self.getTitulo(pesquisa)
+        return retorno
+
+    def getTitulo(self,pesquisa):
+        titulo = 'Imóveis '
+        if 'imoveis_tipos_link' in self.pesquisados:
+            titulo = self.pesquisados['imoveis_tipos_link']['plural']
+        elif 'imoveis_tipos_link' in pesquisa['where']:
+            tipo = self.getTipo(pesquisa['where']['imoveis_tipos_link'])
+            titulo = tipo['plural']
+        if 'tipo_negocio' in self.pesquisados:
+            titulo += self.pesquisados['tipo_negocio']['titulo']
+        elif 'tipo_negocio' in pesquisa['where']:
+            tipo_negocio = self.getTipoNegocio(pesquisa['where']['tipo_negocio'])
+            titulo += tipo_negocio['titulo']
+        if 'bairros_link' in pesquisa['where'] and 'cidades_link' in pesquisa['where']:
+            titulo += ' no ' + self.pesquisados['bairros_link']['nome']
+        if 'cidade_link' in self.pesquisados:
+            titulo += ' em ' + self.pesquisados['cidade_link']['nome'] + ', ' + self.pesquisados['cidade_link']['estado']
+        elif 'cidade_link' in pesquisa:
+            cidade = self.getCidade(pesquisa['where']['cidade_link'])
+            titulo += ' em ' + cidade['nome'] + ', ' + cidade['estado']
+        return titulo
+
+    pesquisados = {}
 
     def setDataPesquisa(self,data):
         args = {}
@@ -248,23 +283,29 @@ class Imoveis(object):
             for item in url:
                 print(item)
                 if 'imoveis_tipos_link' not in retorno:
-                    tipo = self.get_tipo(item)
+                    tipo = self.getTipo(item)
                     if tipo:
+                        self.pesquisados['imoveis_tipos_link'] = tipo
                         retorno['imoveis_tipos_link'] = item
                 if 'tipo_negocio' not in retorno:
-                    tipo_negocio = self.get_tipo_negocio(item)
+                    tipo_negocio = self.getTipoNegocio(item)
                     if tipo_negocio:
+                        self.pesquisados['tipo_negocio'] = tipo_negocio
                         retorno['tipo_negocio'] = item
-                if 'cidades_link' not in retorno:
-                    cidade = self.get_cidade(item)
+                if 'cidade_link' not in retorno:
+                    cidade = self.getCidade(item)
                     if cidade:
-                        retorno['cidades_link'] = item
+                        self.pesquisados['cidade_link'] = cidade
+                        retorno['cidade_link'] = item
                 if 'bairros_link' not in retorno:
-                    if 'cidades_link' in retorno:
-                        bairro = self.get_bairro(item, retorno['cidades_link'])
+                    if 'cidade_link' in retorno:
+                        bairro = self.getBairro(item, retorno['cidade_link'])
                         if bairro:
+                            self.pesquisados['bairros_link'] = bairro
                             retorno['bairros_link'] = item
         return retorno
+
+
 
     def set_tipos(self, data):
         tipos = {
@@ -296,21 +337,21 @@ class Imoveis(object):
             return tipos[data]
         return False
 
-    def get_tipo(self,data):
+    def getTipo(self,data):
         return self.set_tipos(data)
 
 
-    def get_tipo_negocio(self,data):
+    def getTipoNegocio(self,data):
         tipo_negocio = {
-            'venda': {'id': 'venda', 'descricao': 'Venda'},
-            'locacao': {'id': 'locacao', 'descricao': 'Aluguel'},
-            'locacao_dia': {'id': 'locacao_dia', 'descricao': 'Aluguel dia'},
+            'venda': {'id': 'venda', 'descricao': 'Venda','titulo': ' a venda'},
+            'locacao': {'id': 'locacao', 'descricao': 'Aluguel','titulo': ' para alugar'},
+            'locacao_dia': {'id': 'locacao_dia', 'descricao': 'Aluguel dia','titulo': ' para temporada'},
         }
         if data in tipo_negocio:
             return tipo_negocio[data]
         return False
 
-    def get_cidade(self,item):
+    def getCidade(self,item):
         data = {}
         data = {'link': item};
         retorno = self.myMongo.get_item_filtro('cidades', data)
@@ -318,7 +359,7 @@ class Imoveis(object):
             return retorno
         return False
 
-    def get_bairro(self,item,cidade):
+    def getBairro(self,item,cidade):
         data = {}
         data = {'cidade_link': cidade,'link':item};
         retorno = self.myMongo.get_item_filtro('bairros', data)
