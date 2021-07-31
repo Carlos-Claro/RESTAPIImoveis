@@ -163,11 +163,68 @@ class Imoveis(object):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
         print(pesquisa)
+        retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
         retorno['titulo'] = self.getTitulo(pesquisa)
         return retorno
 
+    camposLista = [
+        "_id",
+        "area",
+        "area_terreno",
+        "area_util",
+        "bairro",
+        "bairros_link",
+        "banheiros",
+        "cidade",
+        "cidade_link",
+        "descricao",
+        "estado",
+        "garagens",
+        "id_empresa",
+        "imobiliaria_nome",
+        "imobiliaria_nome_seo",
+        "imoveis_tipos_link",
+        "imoveis_tipos_titulo",
+        "imovel_para",
+        "latitude",
+        "longitude",
+        "location",
+        "logo",
+        "logradouro",
+        "nome",
+        "preco",
+        "preco_locacao",
+        "preco_locacao_dia",
+        "preco_venda",
+        "quartos",
+        "referencia",
+        "tipo_negocio",
+        "uf"
+    ]
+
+    def getCamposLista(self,imoveis):
+        retorno = []
+        qtdeimoveis = 0
+        for imovel in imoveis['itens']:
+            i = {}
+            for campo in self.camposLista:
+                i[campo] = imovel[campo]
+            qtdeimages = 0
+            i['images'] = []
+            for images in imovel['images']:
+                # if qtdeimages < 3:
+                im = {'arquivo': images['arquivo'],'titulo':images['titulo']}
+                i['images'].append(im)
+                # qtdeimages = qtdeimages + 1
+            retorno.append(i)
+            qtdeimoveis = qtdeimoveis + 1
+        return retorno
+
+
+
     def getTitulo(self,pesquisa):
+        print(pesquisa)
         titulo = 'Imóveis '
         if 'imoveis_tipos_link' in self.pesquisados:
             titulo = self.pesquisados['imoveis_tipos_link']['plural']
@@ -183,7 +240,7 @@ class Imoveis(object):
             titulo += ' no ' + self.pesquisados['bairros_link']['nome']
         if 'cidade_link' in self.pesquisados:
             titulo += ' em ' + self.pesquisados['cidade_link']['nome'] + ', ' + self.pesquisados['cidade_link']['estado']
-        elif 'cidade_link' in pesquisa:
+        elif 'cidade_link' in pesquisa['where']:
             cidade = self.getCidade(pesquisa['where']['cidade_link'])
             titulo += ' em ' + cidade['nome'] + ', ' + cidade['estado']
         return titulo
@@ -199,7 +256,7 @@ class Imoveis(object):
         if 'url' in args:
             url = self.trataUrl(args)
             del args['url']
-        retorno['limit'] = 3
+        retorno['limit'] = 6
         if 'limit' in args:
             retorno['limit'] = int(args['limit'])
             del args['limit']

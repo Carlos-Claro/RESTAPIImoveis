@@ -64,7 +64,7 @@ class myMongo(object):
         if 'limit' in data:
             cursor.limit(data['limit'])
         if 'skip' in data:
-            cursor.limit(data['skip'])
+            cursor.skip(data['skip'])
         if 'sort' in data:
             s = self.set_sort(data['sort'])
             cursor.sort(s)

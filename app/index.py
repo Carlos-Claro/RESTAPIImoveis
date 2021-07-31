@@ -888,6 +888,8 @@ def before_request():
         return jsonify(retorno), status_r
     elif request.remote_addr in lista_ip():
         pass
+    elif 'localhost' in sys.argv:
+        pass
     else:
         print(basic_auth.check_credentials())
         print('nao autorizado')
@@ -899,10 +901,7 @@ def before_request():
 
 #"127.0.0.1",
 def lista_ip():
-    return ["189.4.3.5",
-            "201.16.246.212",
-            "201.16.246.176",
-            # "192.168.1",
+    return [
             "192.168.1.20",
             "192.168.1.153",
             "189.39.42.133",
@@ -915,7 +914,7 @@ def lista_ip():
 
 if __name__ == '__main__':
     if 'localhost' in sys.argv:
-        app.run(host='127.0.0.1',port=5000,debug=True)
+        app.run(host='192.168.0.106',port=5000,debug=True)
         # app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
     else:
         app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
