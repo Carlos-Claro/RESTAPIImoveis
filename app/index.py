@@ -17,6 +17,7 @@ from controller.Log import Log
 from controller.Imoveis_relevancia import Imoveis_relevancia
 from controller.Cadastros import Cadastros
 from controller.Cidades import Cidades
+from controller.Bairros import Bairros
 from controller.Clientes_cadastros import Clientes_cadastros
 from controller.Clientes_carrinhos import Clientes_carrinhos
 from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
@@ -260,6 +261,7 @@ def get_cidade():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+
 @app.route('/get_cidade_in_ids/', methods={'GET','POST'})
 def get_cidade_in_ids():
     retorno = {}
@@ -273,6 +275,16 @@ def get_cidade_in_ids():
         status_r = status.HTTP_204_NO_CONTENT
     return jsonify(retorno['itens']), status_r
 
+
+# @basic_auth.required
+@app.route('/get_bairros_por_cidade/<cidade>', methods={'GET'})
+def get_bairros_por_cidade(cidade):
+    bairros = Bairros()
+    retorno = bairros.mongoGet(cidade)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
 
 ########################################
     # Requests de estatisticas      #

@@ -229,15 +229,37 @@ class Imoveis(object):
         if 'imoveis_tipos_link' in self.pesquisados:
             titulo = self.pesquisados['imoveis_tipos_link']['plural']
         elif 'imoveis_tipos_link' in pesquisa['where']:
-            tipo = self.getTipo(pesquisa['where']['imoveis_tipos_link'])
-            titulo = tipo['plural']
+            if '$in' in pesquisa['where']['imoveis_tipos_link']:
+                tipos = []
+                for tipo_link in pesquisa['where']['imoveis_tipos_link']['$in']:
+                    tipo = self.getTipo(tipo_link)
+                    tipos.append(tipo['plural'])
+                titulo = ', '.join(tipos)
+            else:
+                tipo = self.getTipo(pesquisa['where']['imoveis_tipos_link'])
+                titulo = tipo['plural']
+
         if 'tipo_negocio' in self.pesquisados:
             titulo += self.pesquisados['tipo_negocio']['titulo']
         elif 'tipo_negocio' in pesquisa['where']:
             tipo_negocio = self.getTipoNegocio(pesquisa['where']['tipo_negocio'])
             titulo += tipo_negocio['titulo']
-        if 'bairros_link' in pesquisa['where'] and 'cidades_link' in pesquisa['where']:
-            titulo += ' no ' + self.pesquisados['bairros_link']['nome']
+        if 'bairros_link' in pesquisa['where'] and 'cidade_link' in pesquisa['where']:
+            if '$in' in pesquisa['where']['bairros_link']:
+                titulo += ' no '
+                chave = 0
+                for bairro in pesquisa['where']['bairros_link']['$in']:
+                    bairroItem = self.getBairro(bairro, pesquisa['where']['cidade_link'])
+                    if bairroItem:
+                        if chave:
+                            titulo += ', ' + bairroItem['nome']
+                        else:
+                            titulo += bairroItem['nome']
+
+                    chave = chave + 1
+            else:
+                bairroItem = self.getBairro(pesquisa['where']['bairros_link'], pesquisa['where']['cidade_link'])
+                titulo += ' no ' + bairroItem['nome']
         if 'cidade_link' in self.pesquisados:
             titulo += ' em ' + self.pesquisados['cidade_link']['nome'] + ', ' + self.pesquisados['cidade_link']['estado']
         elif 'cidade_link' in pesquisa['where']:
@@ -330,7 +352,7 @@ class Imoveis(object):
                     retorno[chave] = {'$in':v}
         for k,v in url.items():
             retorno[k] = v
-        # print(retorno)
+        print(retorno)
         return retorno
 
     def trataUrl(self, data):
