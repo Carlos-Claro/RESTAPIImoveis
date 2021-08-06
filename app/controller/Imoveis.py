@@ -159,6 +159,19 @@ class Imoveis(object):
     # array com ['limit', ''skip', coluna, ordem]
     #
     #
+    def mongoGetIds(self):
+        get_id = request.args['ids']
+        retorno = []
+        if get_id:
+            ids = get_id.split(',')
+            data = {}
+            data['where'] = {'id': {'$in': ids}}
+            retorno = self.getCamposLista(self.myMongo.get_itens('imoveis', data))
+        return retorno
+
+    # array com ['limit', ''skip', coluna, ordem]
+    #
+    #
     def mongoGetTituloQtde(self, data):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
@@ -352,6 +365,8 @@ class Imoveis(object):
                     retorno[chave] = {'$in':v}
         for k,v in url.items():
             retorno[k] = v
+        if 'localhost' in sys.argv:
+            retorno['tem_foto'] = True
         print(retorno)
         return retorno
 

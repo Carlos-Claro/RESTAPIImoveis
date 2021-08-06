@@ -186,6 +186,16 @@ def portal_main():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+@app.route('/portal_ids',methods=['GET'])
+def portal_ids():
+    imoveis = Imoveis()
+    retorno = imoveis.mongoGetIds()
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
 # @basic_auth.required
 @app.route('/imoveismongo',methods=['GET','POST'])
 def imoveismongo():
