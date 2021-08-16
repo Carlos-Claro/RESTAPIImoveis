@@ -26,6 +26,7 @@ from controller.Contato_site import Contato_site
 from controller.Produtos import Produtos
 from controller.Google_search import Google_search
 from controller.Google_search_terms import Google_search_terms
+from controller.Empresas import Empresas
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
@@ -190,6 +191,21 @@ def portal_main():
 def portal_ids():
     imoveis = Imoveis()
     retorno = imoveis.mongoGetIds()
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+
+# @basic_auth.required
+@app.route('/portal_empresas',methods=['GET'])
+def portal_empresas():
+    retorno = {}
+    empresas = Empresas()
+    if request.method == 'GET':
+        data = request.args
+        retorno = empresas.mongoGet(data)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
