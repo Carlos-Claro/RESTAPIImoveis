@@ -176,9 +176,22 @@ class Imoveis(object):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
         print(pesquisa)
-        retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
         retorno['titulo'] = self.getTitulo(pesquisa)
+        retorno['parametros'] = self.retornaParametros(pesquisa['where'])
+        retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
+        return retorno
+
+    def retornaParametros(self, where):
+        retorno = {}
+        for chave,valor in where.items():
+            if chave == 'tem_foto':
+                pass
+            else:
+                if '$in' in valor:
+                    retorno[chave] = valor['$in']
+                else:
+                    retorno[chave] = valor
         return retorno
 
     camposLista = [
@@ -307,8 +320,7 @@ class Imoveis(object):
                 del args['coluna']
             if 'ordem' in args:
                 del args['ordem']
-        # print(args)
-        if len(args) > 0:
+        if len(args) > 0 or url:
             retorno['where'] = self.getWhere(args, url)
         return retorno
 
