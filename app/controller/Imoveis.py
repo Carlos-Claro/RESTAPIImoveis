@@ -179,7 +179,33 @@ class Imoveis(object):
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
         retorno['titulo'] = self.getTitulo(pesquisa)
         retorno['parametros'] = self.retornaParametros(pesquisa['where'])
+        retorno['uri'] = self.retornaURI(pesquisa['where'])
         retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
+        return retorno
+
+    def retornaURI(self,data):
+        retorno = 'imoveis'
+        if 'imoveis_tipos_link' in data:
+            if '$in' in data['imoveis_tipos_link']:
+                retorno = '+'.join(data['imoveis_tipos_link']['$in'])
+            else:
+                retorno = data['imoveis_tipos_link']
+        retorno += '-'
+        if 'tipo_negocio' in data:
+            retorno += data['tipo_negocio']
+        else:
+            retorno += 'venda'
+        retorno += '-'
+        if 'cidade_link' in data:
+            retorno += data['cidade_link']
+        else:
+            retorno += 'sao_jose_dos_pinhais_pr'
+        if 'bairros_link' in data:
+            retorno += '-'
+            if '$in' in data['bairros_link']:
+                retorno += '+'.join(data['bairros_link']['$in'])
+            else:
+                retorno += data['bairros_link']
         return retorno
 
     def retornaParametros(self, where):
@@ -188,8 +214,13 @@ class Imoveis(object):
             if chave == 'tem_foto':
                 pass
             else:
-                if '$in' in valor:
+                print(valor)
+                if isinstance(valor, int):
+                    retorno[chave] = valor
+                elif '$in' in valor:
                     retorno[chave] = valor['$in']
+                elif '$gte' in valor:
+                    retorno[chave] = valor['$gte']
                 else:
                     retorno[chave] = valor
         return retorno
@@ -250,7 +281,6 @@ class Imoveis(object):
 
 
     def getTitulo(self,pesquisa):
-        print(pesquisa)
         titulo = 'Imóveis '
         if 'imoveis_tipos_link' in self.pesquisados:
             titulo = self.pesquisados['imoveis_tipos_link']['plural']
@@ -264,7 +294,6 @@ class Imoveis(object):
             else:
                 tipo = self.getTipo(pesquisa['where']['imoveis_tipos_link'])
                 titulo = tipo['plural']
-
         if 'tipo_negocio' in self.pesquisados:
             titulo += self.pesquisados['tipo_negocio']['titulo']
         elif 'tipo_negocio' in pesquisa['where']:
@@ -291,6 +320,14 @@ class Imoveis(object):
         elif 'cidade_link' in pesquisa['where']:
             cidade = self.getCidade(pesquisa['where']['cidade_link'])
             titulo += ' em ' + cidade['nome'] + ', ' + cidade['estado']
+        if 'quartos' in pesquisa['where'] or 'banheiros' in pesquisa['where'] or 'garagens' in pesquisa['where']:
+            titulo += ', com'
+            if 'quartos' in pesquisa['where']:
+                titulo += ' + de ' + str(pesquisa['where']['quartos']['$gte']) + ' quarto' + ( '' if pesquisa['where']['quartos']['$gte'] == 1 else 's')
+            if 'banheiros' in pesquisa['where']:
+                titulo += ' + de ' + str(pesquisa['where']['banheiros']['$gte']) + ' banheiro' + ( '' if pesquisa['where']['banheiros']['$gte'] == 1 else 's')
+            if 'garagem' in pesquisa['where']:
+                titulo += ' + de ' + str(pesquisa['where']['garagem']['$gte']) + ' vaga' + ( '' if pesquisa['where']['garagem']['$gte'] == 1 else 's') + ' de garagem'
         return titulo
 
     pesquisados = {}
@@ -350,6 +387,7 @@ class Imoveis(object):
             v = self.getValorTipo(valor,tipo)
         return v,isin
 
+
     def getValorTipo(self,valor,tipo):
         if tipo:
             if 'int' in tipo:
@@ -357,26 +395,49 @@ class Imoveis(object):
             return valor
         return valor
 
-    isfloat = []
-    isint = ['quartos', 'garagens', 'id_tipo', 'cidades_id']
+    isfloat = ['preco_venda','preco_locacao', 'area_util']
+    isint = ['quartos', 'garagem', 'garagens', 'banheiros', 'id_tipo', 'cidades_id']
+    ismaior = ['quartos', 'vagas', 'banheiros', 'garagem']
+    isvalor = ['preco_venda','preco_locacao', 'area_util']
+    valoresMaximos = {
+        "preco_venda": 50000000,
+        "preco_locacao": 50000,
+        "area_util": 50000
+    }
 
     def getWhere(self,itens, url):
         retorno = {}
         for chave,valor in itens.items():
-            # print(chave)
             if chave in url:
-                retorno[chave] = url[chave]
+                v, isin = self.getItemVirgula(url[chave], False)
+                retorno[chave] = v
+                if isin:
+                    retorno[chave] = {'$in': v}
                 del url[chave]
             else:
                 if chave in self.isint:
                     v,isin = self.getItemVirgula(valor,'int')
-                else :
+                else:
                     v,isin = self.getItemVirgula(valor,False)
                 retorno[chave] = v
                 if isin:
-                    retorno[chave] = {'$in':v}
-        for k,v in url.items():
+                    if chave in self.isvalor:
+                        retorno[chave] = {}
+                        retorno[chave]['$gte'] =  int(v[0])
+                        if self.valoresMaximos[chave] == int(v[1]):
+                            retorno[chave]['$lte'] = int(v[1])
+                    else:
+                        retorno[chave] = {'$in':v}
+                elif chave in self.ismaior:
+                    retorno[chave] = {'$gte': v}
+
+        for k,va in url.items():
+            v, isin = self.getItemVirgula(va, False)
             retorno[k] = v
+            if isin:
+                retorno[k] = {'$in': v}
+            else:
+                retorno[k] = v
         if 'localhost' in sys.argv:
             retorno['tem_foto'] = True
         print(retorno)
@@ -387,12 +448,22 @@ class Imoveis(object):
         retorno = {}
         if len(url):
             for item in url:
-                print(item)
                 if 'imoveis_tipos_link' not in retorno:
-                    tipo = self.getTipo(item)
-                    if tipo:
-                        self.pesquisados['imoveis_tipos_link'] = tipo
-                        retorno['imoveis_tipos_link'] = item
+                    if ' ' in item:
+                        array = item.split(' ')
+                        t = []
+                        tipo = False
+                        for a in array:
+                            e = self.getTipo(a)
+                            if e:
+                                tipo = True
+                        if tipo:
+                            retorno['imoveis_tipos_link'] = item.replace(' ',',')
+                    else:
+                        tipo = self.getTipo(item)
+                        if tipo:
+                            self.pesquisados['imoveis_tipos_link'] = tipo
+                            retorno['imoveis_tipos_link'] = item
                 if 'tipo_negocio' not in retorno:
                     tipo_negocio = self.getTipoNegocio(item)
                     if tipo_negocio:
@@ -405,10 +476,23 @@ class Imoveis(object):
                         retorno['cidade_link'] = item
                 if 'bairros_link' not in retorno:
                     if 'cidade_link' in retorno:
-                        bairro = self.getBairro(item, retorno['cidade_link'])
-                        if bairro:
-                            self.pesquisados['bairros_link'] = bairro
-                            retorno['bairros_link'] = item
+                        if ' ' in item:
+                            array = item.split(' ')
+                            t = []
+                            bairro = False
+                            for a in array:
+                                e = self.getBairro(a, retorno['cidade_link'])
+                                if e:
+                                    bairro = True
+                            if bairro:
+                                retorno['bairros_link'] = item.replace(' ',',')
+                        else:
+                            bairro = self.getBairro(item, retorno['cidade_link'])
+                            if bairro:
+                                self.pesquisados['bairros_link'] = bairro
+                                retorno['bairros_link'] = item
+        print('trataurl')
+        print(retorno)
         return retorno
 
 
