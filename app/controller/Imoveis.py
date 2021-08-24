@@ -294,9 +294,7 @@ class Imoveis(object):
             else:
                 tipo = self.getTipo(pesquisa['where']['imoveis_tipos_link'])
                 titulo = tipo['plural']
-        if 'tipo_negocio' in self.pesquisados:
-            titulo += self.pesquisados['tipo_negocio']['titulo']
-        elif 'tipo_negocio' in pesquisa['where']:
+        if 'tipo_negocio' in pesquisa['where']:
             tipo_negocio = self.getTipoNegocio(pesquisa['where']['tipo_negocio'])
             titulo += tipo_negocio['titulo']
         if 'bairros_link' in pesquisa['where'] and 'cidade_link' in pesquisa['where']:
