@@ -172,6 +172,16 @@ class Imoveis(object):
     # array com ['limit', ''skip', coluna, ordem]
     #
     #
+    def mongoGetQtde(self, data):
+        retorno = {}
+        pesquisa = self.setDataPesquisa(data)
+        print(pesquisa)
+        retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
+        return retorno
+
+    # array com ['limit', ''skip', coluna, ordem]
+    #
+    #
     def mongoGetTituloQtde(self, data):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
@@ -182,6 +192,8 @@ class Imoveis(object):
         retorno['uri'] = self.retornaURI(pesquisa['where'])
         retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
         return retorno
+
+
 
     def retornaURI(self,data):
         retorno = 'imoveis'
