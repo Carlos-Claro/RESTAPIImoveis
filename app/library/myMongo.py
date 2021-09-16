@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import pymongo 
+import pymongo
+from bson.objectid import ObjectId
 import datetime
 import pprint
 
@@ -12,7 +13,7 @@ class myMongo(object):
         coll = self.db[collection]
         try:
             res = coll.insert_one(data)
-            resposta = True
+            resposta = res.inserted_id
         except:
             print('erro_add ', data._id)
             resposta = False
@@ -43,11 +44,16 @@ class myMongo(object):
         res = coll.delete_many(filtro).deleted_count
         return res
 
-    def get_item(self,collection,id):
+    def get_item(self, collection, id):
         coll = self.db[collection]
-        p = coll.find_one({'_id':int(id)})
+        p = coll.find_one({'_id': int(id)})
         return p
-    
+
+    def get_item_id(self, collection, id):
+        coll = self.db[collection]
+        p = coll.find_one({'_id': ObjectId(id)})
+        return p
+
     def get_item_filtro(self,collection,where):
         coll = self.db[collection]
         p = coll.find_one(where)

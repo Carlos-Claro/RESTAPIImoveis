@@ -9,3 +9,4 @@ flask_api
 flask-cors
 pyopenssl
 Flask-BasicAuth
+jwcrypto

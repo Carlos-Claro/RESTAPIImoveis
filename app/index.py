@@ -8,7 +8,7 @@ from flask_basicauth import BasicAuth
 import json
 # from flask_bcrypt import Bcrypt
 # from simplecrypt import encrypt, decrypt
-
+import datetime
 sys.path.append('/library')
 sys.path.append('/controller')
 sys.path.append('/model')
@@ -27,12 +27,13 @@ from controller.Produtos import Produtos
 from controller.Google_search import Google_search
 from controller.Google_search_terms import Google_search_terms
 from controller.Empresas import Empresas
+from controller.Usuario_portal import UsuarioPortal
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
 from library.Exception import RequestRetornaZeroItens
 
-
+from jwcrypto import jwt,jwk
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
@@ -48,6 +49,7 @@ app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
 app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
 # app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
+KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(data['basic']['passwd'])
 
 # bcrypt = Bcrypt(app.app)
 # pw_hash = bcrypt.generate_password_hash(data['basic']['passwd'])
@@ -59,6 +61,28 @@ def index():
     status_r = status.HTTP_200_OK
     retorno = {'item':'POW Imoveis API, serve sites e portais imobiliários.'}
     return jsonify(retorno), status_r
+
+@app.route('/auth', methods=['POST'])
+def auth():
+    data_user = {
+        'ip': [request.remote_addr],
+        'host': [request.headers['origin']],
+        'user_agent': request.headers['user_agent'],
+        'name': '',
+        'auth_type': False,
+        'email': '',
+        'first_access': datetime.datetime.now()
+    }
+    usuario = UsuarioPortal()
+    id = usuario.add(data_user)
+
+    token = jwt.JWT(header={"alg": "HS256"},
+                    claims={"id": str(id)})
+    token.make_signed_token(KEY_JWK)
+    status_r = status.HTTP_200_OK
+    retorno = {'token': token.serialize()}
+    return jsonify(retorno), status_r
+
 
 @app.route('/favicon.ico')
 def favicon():
@@ -931,23 +955,39 @@ def page_not_found(error):
 def before_request():
     if basic_auth.authenticate():
         pass
-    elif request.method == "OPTIONS" and 'authorization' in request.headers['Access-Control-Request-Headers']:
+    elif request.method == "OPTIONS" and ( 'authorization' in request.headers['Access-Control-Request-Headers'] or 'auth' in request.path ):
         retorno = {}
         retorno['message'] = 'Use Authorization to access the content'
         status_r = status.HTTP_200_OK
         return jsonify(retorno), status_r
     elif request.remote_addr in lista_ip():
         pass
-    elif 'localhost' in sys.argv:
-        pass
+    # elif 'localhost' in sys.argv:
+    #     pass
     else:
-        print(basic_auth.check_credentials())
-        print('nao autorizado')
-        retorno = {}
-        retorno['status'] = False
-        retorno['message'] = 'bloqueio de usuário, por falta de credenciais'
-        status_r = status.HTTP_401_UNAUTHORIZED
-        return jsonify(retorno), status_r
+        if 'auth' in request.path and request.method == 'POST':
+            pass
+        elif 'authorization' in request.headers:
+            token = request.headers['authorization'].replace('Bearer ', '').strip()
+            ET = jwt.JWT(key=KEY_JWK, jwt=token)
+            info = json.loads(ET.claims)
+            print(info)
+            if 'id' in info:
+                usuario = UsuarioPortal()
+                print(usuario.getId(info['id']))
+                if usuario.getId(info['id']):
+                    pass
+                else:
+                    return jsonify({status: False, message: 'Usuário não autorizado ou não encontrado'}), status.HTTP_401_UNAUTHORIZED
+            else:
+                return jsonify({status: False, message: 'Token inválido'}), status.HTTP_401_UNAUTHORIZED
+        else:
+            print('nao autorizado')
+            retorno = {}
+            retorno['status'] = False
+            retorno['message'] = 'bloqueio de usuário, por falta de credenciais'
+            status_r = status.HTTP_401_UNAUTHORIZED
+            return jsonify(retorno), status_r
 
 #"127.0.0.1",
 def lista_ip():
@@ -958,7 +998,7 @@ def lista_ip():
             "189.39.42.155",
             "189.39.42.153",
             "127.0.0.1",
-            "45.181.36.234",
+            # "45.181.36.234",
             "localhost"
             ]
 
