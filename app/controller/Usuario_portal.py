@@ -31,6 +31,9 @@ class UsuarioPortal(object):
     def getId(self,id):
         return self.usuarioPortalMongo.getItem(id)
 
+    def getItemFiltro(self,data):
+        return self.usuarioPortalMongo.getItemFiltro(data)
+
 
 
 if __name__ == '__main__':

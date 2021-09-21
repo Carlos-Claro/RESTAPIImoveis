@@ -68,21 +68,56 @@ def auth():
         'ip': [request.remote_addr],
         'host': [request.headers['origin']],
         'user_agent': request.headers['user_agent'],
-        'name': '',
         'auth_type': False,
+        'name':'',
         'email': '',
+        'image':'',
         'first_access': datetime.datetime.now()
     }
     usuario = UsuarioPortal()
     id = usuario.add(data_user)
-
     token = jwt.JWT(header={"alg": "HS256"},
-                    claims={"id": str(id)})
+                    claims={"id": str(id), "islogin": False})
     token.make_signed_token(KEY_JWK)
     status_r = status.HTTP_200_OK
     retorno = {'token': token.serialize()}
     return jsonify(retorno), status_r
 
+@app.route('/atualiza_token', methods=['POST'])
+def atualiza_token():
+    data = json.loads(request.data)
+    usuario = UsuarioPortal()
+    data_usuario = usuario.getItemFiltro({"email": data['email']})
+    if data_usuario:
+        id = data_usuario['_id']
+        token = jwt.JWT(header={"alg": "HS256"},
+                        claims={"id": str(id), "islogin": True})
+        status_r = status.HTTP_200_OK
+        token.make_signed_token(KEY_JWK)
+        retorno = {'token': token.serialize()}
+        return jsonify(retorno), status_r
+    status_r = status.HTTP_404_NOT_FOUND
+    retorno = {'token': False}
+    return jsonify(retorno), status_r
+
+
+@app.route('/auth_cadastro', methods=['POST'])
+def auth_cadastro():
+    data = json.loads(request.data)
+    usuario = UsuarioPortal()
+    data_usuario = usuario.getItemFiltro({"email": data['email']})
+    if data_usuario:
+        id = data_usuario['_id']
+    else:
+        data['ip']= [request.remote_addr]
+        # data['host']= [request.headers['origin']]
+        data['user_agent']= request.headers['user_agent']
+        data['auth_type']= data['auth_type']
+        data['first_access']= datetime.datetime.now()
+        id = usuario.add(data)
+    status_r = status.HTTP_200_OK
+    retorno = {'salvo': str(id)}
+    return jsonify(retorno), status_r
 
 @app.route('/favicon.ico')
 def favicon():
@@ -423,6 +458,8 @@ def log_imovel_min():
     imoveis = Log()
     retorno = imoveis.mongoGetLogImovelMinData()
     return jsonify(retorno)
+
+
 
 
 ########################################
@@ -971,10 +1008,8 @@ def before_request():
             token = request.headers['authorization'].replace('Bearer ', '').strip()
             ET = jwt.JWT(key=KEY_JWK, jwt=token)
             info = json.loads(ET.claims)
-            print(info)
             if 'id' in info:
                 usuario = UsuarioPortal()
-                print(usuario.getId(info['id']))
                 if usuario.getId(info['id']):
                     pass
                 else:

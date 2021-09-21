@@ -23,6 +23,10 @@ class usuarioPortalMongo(object):
     def getItem(self, id):
         return self.db.get_item_id('usuario_portal', id)
 
+    def getItemFiltro(self, filtro):
+        return self.db.get_item_filtro('usuario_portal', filtro)
+
+
     def getItens(self, data):
         return self.db.getItens('usuario_portal', data)
 
