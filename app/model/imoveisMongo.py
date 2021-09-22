@@ -18,10 +18,13 @@ class imoveisMongo(object):
     
     def delete_id(self, id):
         return self.db.delete_one('imoveis',{'_id':id})
-    
+
     def getItem(self, id):
-        return self.db.getItem('imoveis',id)
-    
+        return self.db.get_item_id('imoveis', id)
+
+    def getItemFiltro(self, data):
+        return self.db.get_item_filtro('imoveis', data)
+
     def getItens(self, data):
         return self.db.getItens('imoveis',data)
     

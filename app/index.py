@@ -28,6 +28,7 @@ from controller.Google_search import Google_search
 from controller.Google_search_terms import Google_search_terms
 from controller.Empresas import Empresas
 from controller.Usuario_portal import UsuarioPortal
+from controller.Log_portal import Log_portal
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
@@ -49,7 +50,8 @@ app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
 app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
 # app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
-KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(data['basic']['passwd'])
+KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(data['basic']['user'] + data['basic']['passwd'])
+# print(KEY_JWK.export())
 
 # bcrypt = Bcrypt(app.app)
 # pw_hash = bcrypt.generate_password_hash(data['basic']['passwd'])
@@ -240,7 +242,7 @@ def portal_main():
     retorno = {}
     imoveis = Imoveis()
     data = request.args
-    retorno = imoveis.mongoGetTituloQtde(data)
+    retorno = imoveis.mongoGetTituloQtde(data, KEY_JWK)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -251,7 +253,7 @@ def portal_qtde():
     retorno = {}
     imoveis = Imoveis()
     data = request.args
-    retorno = imoveis.mongoGetTituloQtde(data)
+    retorno = imoveis.mongoGetTituloQtde(data, KEY_JWK)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -281,6 +283,17 @@ def portal_empresas():
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
+
+
+@app.route('/registra_log',methods=['POST'])
+def registra_log():
+    log = Log_portal()
+    retorno = log.set(KEY_JWK)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
 
 
 # @basic_auth.required

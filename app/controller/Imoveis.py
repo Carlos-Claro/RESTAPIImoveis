@@ -7,10 +7,15 @@ sys.path.append('../controller')
 sys.path.append('../model')
 from model.imoveisModel import imoveisModel
 from model.imoveisMongo import imoveisMongo
+
+from controller.Log_pesquisas import Log_pesquisas
+
 from library.myMongo import myMongo
 from flask import request
 import time
 import datetime
+from jwcrypto import jwt,jwk
+
 
 class Imoveis(object):
 
@@ -182,16 +187,30 @@ class Imoveis(object):
     # array com ['limit', ''skip', coluna, ordem]
     #
     #
-    def mongoGetTituloQtde(self, data):
+    def mongoGetTituloQtde(self, data, key):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
-        print(pesquisa)
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
         retorno['titulo'] = self.getTitulo(pesquisa)
         retorno['parametros'] = self.retornaParametros(pesquisa['where'])
         retorno['uri'] = self.retornaURI(pesquisa['where'])
         retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
+        self.setLogPesquisa(retorno['parametros'],  key)
         return retorno
+
+    def setLogPesquisa(self, pesquisa, key):
+        token = request.headers['authorization'].replace('Bearer ', '').strip()
+        ET = jwt.JWT(key=key, jwt=token)
+        info = json.loads(ET.claims)
+        data_p = {'usuario_portal': info['id'],
+                  'ip': request.remote_addr,
+                  'host': request.headers['origin'],
+                  'date': datetime.datetime.now()
+                  }
+        log = Log_pesquisas()
+        log.add(data_p,pesquisa)
+        return True
+
 
 
 
@@ -226,13 +245,16 @@ class Imoveis(object):
             if chave == 'tem_foto':
                 pass
             else:
-                print(valor)
                 if isinstance(valor, int):
                     retorno[chave] = valor
                 elif '$in' in valor:
                     retorno[chave] = valor['$in']
+                elif '$gte' in valor and '$lte' in valor:
+                    retorno[chave] = [valor['$gte'], valor['$lte']]
                 elif '$gte' in valor:
                     retorno[chave] = valor['$gte']
+                elif '$lte' in valor:
+                    retorno[chave] = valor['$lte']
                 else:
                     retorno[chave] = valor
         return retorno
@@ -434,7 +456,7 @@ class Imoveis(object):
                     if chave in self.isvalor:
                         retorno[chave] = {}
                         retorno[chave]['$gte'] =  int(v[0])
-                        if self.valoresMaximos[chave] == int(v[1]):
+                        if self.valoresMaximos[chave] != int(v[1]):
                             retorno[chave]['$lte'] = int(v[1])
                     else:
                         retorno[chave] = {'$in':v}
