@@ -198,6 +198,17 @@ class Imoveis(object):
         self.setLogPesquisa(retorno['parametros'],  key)
         return retorno
 
+    # array com ['limit', ''skip', coluna, ordem]
+    #
+    #
+    def mongoGetURL(self, data, key):
+        retorno = {}
+        pesquisa = self.setDataPesquisa(data)
+        retorno['parametros'] = self.retornaParametros(pesquisa['where'])
+        retorno['uri'] = self.retornaURI(pesquisa['where'])
+        self.setLogPesquisa(retorno['parametros'], key)
+        return retorno
+
     def setLogPesquisa(self, pesquisa, key):
         token = request.headers['authorization'].replace('Bearer ', '').strip()
         ET = jwt.JWT(key=key, jwt=token)
@@ -274,6 +285,8 @@ class Imoveis(object):
         "garagens",
         "id_empresa",
         "imobiliaria_nome",
+        "imobiliaria_whatsapp",
+        "imobiliaria_telefone",
         "imobiliaria_nome_seo",
         "imoveis_tipos_link",
         "imoveis_tipos_titulo",

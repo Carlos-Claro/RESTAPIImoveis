@@ -248,6 +248,18 @@ def portal_main():
         status_r = status.HTTP_403_FORBIDDEN
     return jsonify(retorno), status_r
 
+@app.route('/portal_url',methods=['GET'])
+def portal_url():
+    retorno = {}
+    imoveis = Imoveis()
+    data = request.args
+    retorno = imoveis.mongoGetURL(data, KEY_JWK)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
 @app.route('/portal_qtde',methods=['GET'])
 def portal_qtde():
     retorno = {}

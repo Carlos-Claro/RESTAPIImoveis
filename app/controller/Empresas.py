@@ -11,7 +11,12 @@ class Empresas(object):
         self.myMongo = myMongo('imoveis')
 
     def mongoGet(self, data):
-        return self.myMongo.get_itens('empresas', {'where': {'cidade_link': data['cidade_link']}, 'sort':{'ordenacao':1}})
+        filtro = ''
+        if 'cidade_link' in data:
+            filtro = {'cidade_link': data['cidade_link']}
+        elif 'id' in data:
+            filtro = {'id': data['id']}
+        return self.myMongo.get_itens('empresas', {'where': filtro, 'sort':{'ordenacao':1}})
 
 
 
