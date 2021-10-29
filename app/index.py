@@ -87,8 +87,13 @@ def auth():
 
 @app.route('/atualiza_token', methods=['POST'])
 def atualiza_token():
+    token_ = request.headers['authorization'].replace('Bearer ', '').strip()
+    ET = jwt.JWT(key=KEY_JWK, jwt=token_)
+    info = json.loads(ET.claims)
+    id_antigo = info['id']
     data = json.loads(request.data)
     usuario = UsuarioPortal()
+    log = Log_portal()
     data_usuario = usuario.getItemFiltro({"email": data['email']})
     if data_usuario:
         id = data_usuario['_id']
@@ -97,6 +102,9 @@ def atualiza_token():
         status_r = status.HTTP_200_OK
         token.make_signed_token(KEY_JWK)
         retorno = {'token': token.serialize()}
+        filtro_update = {'usuario_portal': id_antigo}
+        data_update = {'usuario_portal': str(id)}
+        qtde_update = log.update_filtro(filtro_update, data_update)
         return jsonify(retorno), status_r
     status_r = status.HTTP_404_NOT_FOUND
     retorno = {'token': False}
@@ -105,6 +113,7 @@ def atualiza_token():
 
 @app.route('/auth_cadastro', methods=['POST'])
 def auth_cadastro():
+
     data = json.loads(request.data)
     usuario = UsuarioPortal()
     data_usuario = usuario.getItemFiltro({"email": data['email']})
@@ -117,9 +126,10 @@ def auth_cadastro():
         data['auth_type']= data['auth_type']
         data['first_access']= datetime.datetime.now()
         id = usuario.add(data)
+    retorno = True
     status_r = status.HTTP_200_OK
-    retorno = {'salvo': str(id)}
     return jsonify(retorno), status_r
+
 
 @app.route('/favicon.ico')
 def favicon():

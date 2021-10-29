@@ -22,6 +22,9 @@ class UsuarioPortal(object):
     def update(self, id, data):
         return {'qtde': self.usuarioPortalMongo.update_id(data, id)}
 
+    def update_filtro(self, filtro, data):
+        return {'qtde': self.usuarioPortalMongo.update_filtro(filtro, data)}
+
     def delete(self, id):
         return {'qtde': self.usuarioPortalMongo.delete_id(id)}
 

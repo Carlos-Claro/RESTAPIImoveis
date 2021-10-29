@@ -74,6 +74,10 @@ class Log_portal(object):
             return self.logPortalMongo.update_id(data, id)
         return False
 
+    def update_filtro(self, filtro, data):
+        return self.logPortalMongo.update_filtro(filtro, data)
+
+
     def delete(self, data):
         data = request.args
         item = self.logPortalMongo.getItem(data['id'])

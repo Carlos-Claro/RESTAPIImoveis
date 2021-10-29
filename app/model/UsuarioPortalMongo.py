@@ -17,6 +17,9 @@ class usuarioPortalMongo(object):
     def update_id(self, id, data):
         return self.db.update_one('usuario_portal', {'_id': id}, data)
 
+    def update_filtro(self, filtro, data):
+        return self.db.update_many('usuario_portal', filtro, {"$set": data})
+
     def delete_id(self, id):
         return self.db.delete_one('usuario_portal', {'_id': id})
 
