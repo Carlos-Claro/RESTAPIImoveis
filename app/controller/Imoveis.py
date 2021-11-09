@@ -192,6 +192,7 @@ class Imoveis(object):
         pesquisa = self.setDataPesquisa(data)
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
         retorno['titulo'] = self.getTitulo(pesquisa)
+        retorno['descricao'] = 'Mais de {}, {}. várias opções de apartamentos, casas, sobrados, terrenos  para comprar ou alugar. Icuritiba.com o portal de imóveis de Curitiba '.format(retorno['qtde_total'],retorno['titulo'])
         retorno['parametros'] = self.retornaParametros(pesquisa['where'])
         retorno['uri'] = self.retornaURI(pesquisa['where'])
         retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
@@ -371,6 +372,8 @@ class Imoveis(object):
             if 'garagem' in pesquisa['where']:
                 titulo += ' + de ' + str(pesquisa['where']['garagem']['$gte']) + ' vaga' + ( '' if pesquisa['where']['garagem']['$gte'] == 1 else 's') + ' de garagem'
         return titulo
+
+
 
     pesquisados = {}
 
