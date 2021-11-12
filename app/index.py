@@ -318,6 +318,18 @@ def registra_log():
 
 
 
+@app.route('/set_contato',methods=['POST'])
+def set_contato():
+    contato = Contato_site()
+    retorno = contato.set(KEY_JWK)
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+
+
 # @basic_auth.required
 @app.route('/imoveismongo',methods=['GET','POST'])
 def imoveismongo():

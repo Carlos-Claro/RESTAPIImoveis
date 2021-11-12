@@ -10,7 +10,7 @@ class imoveisMongo(object):
         self.db = myMongo('imoveis')
         
     def add(self,data):
-        return self.db.add_one(data)
+        return self.db.add_one('imoveis', data)
     
     def update_id(self,id,data):
         return self.db.update_one('imoveis',{'_id':id},data)

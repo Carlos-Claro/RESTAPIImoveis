@@ -1,5 +1,5 @@
 Flask
-mysql-connector
+mysql-connector-python
 connexion
 connexion[swagger-ui]
 pymongo

@@ -11,6 +11,7 @@ class contatoSiteModel(object):
         self.query = myQuery()
 
     def add(self, data):
+        print(data)
         count = 0
         keys = '('
         values = '('
@@ -36,7 +37,7 @@ class contatoSiteModel(object):
                 if count > 0:
                     valor += ', '
                 valor += k + '= "' + str(v) + '"'
-        qu = 'UPDATE contato_site set {} where id = {}'.format(valor, str(id))
+        qu = 'UPDATE contatos_site set {} where id = {}'.format(valor, str(id))
         return self.conn.update(qu)
 
     def update_id_in(self, data, ids):

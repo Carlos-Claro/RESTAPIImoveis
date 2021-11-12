@@ -223,6 +223,7 @@ class Imoveis(object):
         log.add(data_p,pesquisa)
         return True
 
+
     def retornaURI(self,data):
         retorno = 'imoveis'
         if 'imoveis_tipos_link' in data:
