@@ -63,13 +63,23 @@ class Contato_site(object):
                     'usuario_site': info['id'],
                     'id_empresa': int(data['id_empresa']),
                     'id_imovel': int(data['id_imovel']),
-                    'ativo': True,
-                    'interacao': [{'autor':'usuario', 'message': data['message']}]
+                    'status': True,
+                    'status_interacao':0,
+                    'date':datetime.datetime.now(),
+                    'interacao': [{'autor':'usuario', 'message': data['message'], 'date':datetime.datetime.now()}]
                 }
                 id_chat = self.chatMongo.add(data_add_chat)
-                if not id_chat :
-                    retorno = {"status": True, "message": "Mensagem salva, e enviada para a imobiliaria"}
+                if id_chat:
+                    retorno = {"status": True, "message": "Mensagem salva, e enviada para a imobiliaria, consulte a conversa no chat"}
+                else:
+                    pass
         return retorno
+
+    def setEmailEmpresa(self, data):
+        return 0
+
+    def setEmailUsuario(self, data):
+        return 0
 
     def getContatos(self):
         return self.contatoSiteModel.getItensDisparo(request.args)

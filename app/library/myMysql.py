@@ -4,11 +4,15 @@ import mysql.connector as mysql
 from mysql.connector import Error
 import json
 import sys, os
+sys.path.append('./')
+from .myKeys import myKeys
 
 class myMysql(object):
     
     def __init__(self):
-        self.getDataconnection();
+        keys = myKeys()
+        self.data = keys.getDB('guiasjp')
+        print(self.data)
         
     def add(self,query):
         try:
@@ -66,18 +70,7 @@ class myMysql(object):
         retorno = cursor.fetchall()
         conn.close()
         return retorno
-    
-    def getDataconnection(self):
-        db = 'server'
-        endereco = '/var/www/json/keys.json'
-        if 'localhost' in sys.argv:
-            db = 'localhost'
-        elif 'programacao' in sys.argv:
-            db = 'localhost'
-            endereco = '/home/www/json/keys.json'
-        with open(endereco) as json_file:
-            data = json.load(json_file)
-            self.data = data['database'][db]['guiasjp']
+
 
     def connect(self):
         try:

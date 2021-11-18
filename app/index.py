@@ -35,22 +35,20 @@ from library.Exception import RequestInvalido, RequestIncompleto
 from library.Exception import RequestRetornaZeroItens
 
 from jwcrypto import jwt,jwk
+from library.myKeys import myKeys
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
-
-endereco = '/var/www/json/keys.json'
-if 'programacao' in sys.argv:
-    endereco = '/home/www/json/keys.json'
-with open(endereco) as json_file:
-    data = json.load(json_file)
-
-app.app.config['BASIC_AUTH_USERNAME'] = data['basic']['user']
-app.app.config['BASIC_AUTH_PASSWORD'] = data['basic']['passwd']
+dataKeys = myKeys()
+basic = dataKeys.get('basic', False)
+print('keys linha 48 index')
+print(basic['user'])
+app.app.config['BASIC_AUTH_USERNAME'] = basic['user']
+app.app.config['BASIC_AUTH_PASSWORD'] = basic['passwd']
 # app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
-KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(data['basic']['user'] + data['basic']['passwd'])
+KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(basic['user'] + basic['passwd'])
 # print(KEY_JWK.export())
 
 # bcrypt = Bcrypt(app.app)
@@ -135,8 +133,8 @@ def auth_cadastro():
 def favicon():
     return send_from_directory(os.path.join(str(app.root_path), 'images'),'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-@app.route('/imoveis',methods=['GET','POST'])
 @basic_auth.required
+@app.route('/imoveis',methods=['GET','POST'])
 def imoveis():
     imoveis = Imoveis()
     if request.method == 'GET':
