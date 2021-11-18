@@ -10,6 +10,7 @@ from model.logPortalMongo import logPortalMongo
 from model.chatMongo import chatMongo
 from model.UsuarioPortalMongo import usuarioPortalMongo
 from library.myToken import myToken
+from library.mySMTP import mySMTP
 from flask import request
 import time
 import datetime
@@ -47,11 +48,18 @@ class Contato_site(object):
         del contato_site['message']
         del contato_site['id_imovel']
         del contato_site['referencia']
+        link = contato_site['link']
+        del contato_site['link']
         contato_site['data'] = int(time.time())
         id_contato = self.contatoSiteModel.add(contato_site)
         if id_contato:
             # todo: disparo de email
+            contato_site['link'] = link
+            smtp = mySMTP(contato_site)
+            smtp.envioEmpresa()
+            smtp.envioUsuario()
             retorno = {"status": True, "message": "Mensagem salva, consulte a mensagem no chat, que esta no menu"}
+            return retorno
             verificaChatAtivo = self.chatMongo.getItemFiltro({'usuario_site':info['id'], 'id_imovel': int(data['id_imovel'])})
             if verificaChatAtivo:
                 # todo: adiciona interacao

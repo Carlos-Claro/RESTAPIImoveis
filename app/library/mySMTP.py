@@ -1,24 +1,64 @@
+import sys
+sys.path.append('../model')
 import smtplib, ssl
+import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from myKeys import myKeys
+from .myKeys import myKeys
+from model.empresasMongo import empresasMongo
 
 # https://realpython.com/python-send-email/
 
 class mySMTP(object):
 
-    def __init__(self):
+    def __init__(self, data):
         keys = myKeys()
         self.smtp = keys.getSMTP('pow')
+        self.data = data
+        empresas = empresasMongo()
+        self.empresa = empresas.getItem(data['id_empresa'])
 
 
 
-    def envioEmpresa(self, data):
-        return data
+    def dataEmail(self):
+        print(self.empresa['contato_nome'])
+        array = {
+            'contato_nome': self.empresa['contato_nome'],
+            'empresa_nome_fantasia': self.empresa['nome_fantasia'],
+            'date': datetime.datetime.now(),
+            'assunto': self.data['assunto'],
+            'usuario_nome': self.data['nome'],
+            'usuario_email': self.data['email'],
+            'usuario_telefone': '',
+            'link_imovel': self.data['link'],
+            'portal': self.data['portal'],
+            'message': self.data['mensagem']
+        }
+        return array
 
 
-    def envioUsuario(self, data):
-        return data
+    def envioEmpresa(self):
+        dados = self.dataEmail()
+        with open('templates/email_empresa.html', 'r') as a:
+            email = a.read()
+        email_f = email.format(**dados)
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = dados['assunto']
+        message["From"] = 'email@portaisimobiliarios.com.br'
+        message["To"] = 'programacao@pow.com.br'
+        part1 = MIMEText(email_f, "plain")
+        part2 = MIMEText(email_f, "html")
+        message.attach(part1)
+        message.attach(part2)
+        with smtplib.SMTP(self.smtp['smtp_host'], self.smtp['smtp_port']) as smtpServer:
+            smtpServer.login(self.smtp['smtp_user'], self.smtp['smtp_pass'])
+            smtpServer.sendmail('email@portaisimobiliarios.com.br','programacao@pow.com.br', message.as_string() )
+        return 0
+
+
+    def envioUsuario(self):
+        return 0
 
 
     def messageUsuario(self):
