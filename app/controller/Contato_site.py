@@ -9,6 +9,7 @@ from model.contatoSiteModel import contatoSiteModel
 from model.logPortalMongo import logPortalMongo
 from model.chatMongo import chatMongo
 from model.UsuarioPortalMongo import usuarioPortalMongo
+from library.myToken import myToken
 from flask import request
 import time
 import datetime
@@ -23,11 +24,10 @@ class Contato_site(object):
         self.chatMongo = chatMongo()
         self.usuarioPortalMongo = usuarioPortalMongo()
 
-    def set(self, key):
+    def set(self):
         retorno = {"status":False, "message": "Não foi possivel processar a requisição"}
-        token = request.headers['authorization'].replace('Bearer ', '').strip()
-        ET = jwt.JWT(key=key, jwt=token)
-        info = json.loads(ET.claims)
+        token = myToken()
+        info = token.getInfo()
         usuario = self.usuarioPortalMongo.getItem(info['id'])
         data_add = {'usuario_portal': info['id'],
                     'ip': request.remote_addr,

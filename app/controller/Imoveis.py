@@ -11,6 +11,7 @@ from model.imoveisMongo import imoveisMongo
 from controller.Log_pesquisas import Log_pesquisas
 
 from library.myMongo import myMongo
+from library.myToken import myToken
 from flask import request
 import time
 import datetime
@@ -187,7 +188,7 @@ class Imoveis(object):
     # array com ['limit', ''skip', coluna, ordem]
     #
     #
-    def mongoGetTituloQtde(self, data, key):
+    def mongoGetTituloQtde(self, data):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
         retorno['qtde_total'] = self.myMongo.get_total_itens('imoveis', pesquisa)
@@ -196,24 +197,23 @@ class Imoveis(object):
         retorno['parametros'] = self.retornaParametros(pesquisa['where'])
         retorno['uri'] = self.retornaURI(pesquisa['where'])
         retorno['itens'] = self.getCamposLista(self.myMongo.get_itens('imoveis', pesquisa))
-        self.setLogPesquisa(retorno['parametros'],  key)
+        self.setLogPesquisa(retorno['parametros'])
         return retorno
 
     # array com ['limit', ''skip', coluna, ordem]
     #
     #
-    def mongoGetURL(self, data, key):
+    def mongoGetURL(self, data):
         retorno = {}
         pesquisa = self.setDataPesquisa(data)
         retorno['parametros'] = self.retornaParametros(pesquisa['where'])
         retorno['uri'] = self.retornaURI(pesquisa['where'])
-        self.setLogPesquisa(retorno['parametros'], key)
+        self.setLogPesquisa(retorno['parametros'])
         return retorno
 
-    def setLogPesquisa(self, pesquisa, key):
-        token = request.headers['authorization'].replace('Bearer ', '').strip()
-        ET = jwt.JWT(key=key, jwt=token)
-        info = json.loads(ET.claims)
+    def setLogPesquisa(self, pesquisa):
+        token = myToken()
+        info = token.getInfo()
         data_p = {'usuario_portal': info['id'],
                   'ip': request.remote_addr,
                   'host': request.headers['origin'],

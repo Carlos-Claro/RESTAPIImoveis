@@ -7,6 +7,7 @@ sys.path.append('../controller')
 sys.path.append('../model')
 from model.logPortalMongo import logPortalMongo
 from model.imoveisMongo import imoveisMongo
+from library.myToken import myToken
 from flask import request
 import time
 import datetime
@@ -17,10 +18,9 @@ class Log_portal(object):
     def __init__(self):
         self.logPortalMongo = logPortalMongo()
 
-    def set(self, key):
-        token = request.headers['authorization'].replace('Bearer ', '').strip()
-        ET = jwt.JWT(key=key, jwt=token)
-        info = json.loads(ET.claims)
+    def set(self):
+        token = myToken()
+        info = token.getInfo()
         data_add = {'usuario_portal': info['id'],
                   'ip': request.remote_addr,
                   'host': request.headers['origin'],

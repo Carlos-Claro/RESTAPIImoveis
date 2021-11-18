@@ -34,22 +34,20 @@ from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
 from library.Exception import RequestRetornaZeroItens
 
-from jwcrypto import jwt,jwk
+from library.myToken import myToken
 from library.myKeys import myKeys
+
+
 
 app = connexion.App(__name__,specification_dir='./')
 CORS(app.app, supports_credentials=True)
 #app.add_api('swagger.yaml')
 dataKeys = myKeys()
 basic = dataKeys.get('basic', False)
-print('keys linha 48 index')
-print(basic['user'])
 app.app.config['BASIC_AUTH_USERNAME'] = basic['user']
 app.app.config['BASIC_AUTH_PASSWORD'] = basic['passwd']
 # app.app.config['BASIC_AUTH_FORCE'] = True
 basic_auth = BasicAuth(app.app)
-KEY_JWK = jwk.JWK(generate='oct', size=256).from_password(basic['user'] + basic['passwd'])
-# print(KEY_JWK.export())
 
 # bcrypt = Bcrypt(app.app)
 # pw_hash = bcrypt.generate_password_hash(data['basic']['passwd'])
@@ -76,18 +74,15 @@ def auth():
     }
     usuario = UsuarioPortal()
     id = usuario.add(data_user)
-    token = jwt.JWT(header={"alg": "HS256"},
-                    claims={"id": str(id), "islogin": False})
-    token.make_signed_token(KEY_JWK)
+    token = myToken()
     status_r = status.HTTP_200_OK
-    retorno = {'token': token.serialize()}
+    retorno = {'token': token.set({"id": str(id), "islogin": False})}
     return jsonify(retorno), status_r
 
 @app.route('/atualiza_token', methods=['POST'])
 def atualiza_token():
-    token_ = request.headers['authorization'].replace('Bearer ', '').strip()
-    ET = jwt.JWT(key=KEY_JWK, jwt=token_)
-    info = json.loads(ET.claims)
+    token_ = myToken()
+    info = token_.getInfo()
     id_antigo = info['id']
     data = json.loads(request.data)
     usuario = UsuarioPortal()
@@ -95,14 +90,11 @@ def atualiza_token():
     data_usuario = usuario.getItemFiltro({"email": data['email']})
     if data_usuario:
         id = data_usuario['_id']
-        token = jwt.JWT(header={"alg": "HS256"},
-                        claims={"id": str(id), "islogin": True})
-        status_r = status.HTTP_200_OK
-        token.make_signed_token(KEY_JWK)
-        retorno = {'token': token.serialize()}
+        retorno = {'token': token_.set({"id": str(id), "islogin": True})}
         filtro_update = {'usuario_portal': id_antigo}
         data_update = {'usuario_portal': str(id)}
         qtde_update = log.update_filtro(filtro_update, data_update)
+        status_r = status.HTTP_200_OK
         return jsonify(retorno), status_r
     status_r = status.HTTP_404_NOT_FOUND
     retorno = {'token': False}
@@ -111,7 +103,6 @@ def atualiza_token():
 
 @app.route('/auth_cadastro', methods=['POST'])
 def auth_cadastro():
-
     data = json.loads(request.data)
     usuario = UsuarioPortal()
     data_usuario = usuario.getItemFiltro({"email": data['email']})
@@ -250,7 +241,7 @@ def portal_main():
     retorno = {}
     imoveis = Imoveis()
     data = request.args
-    retorno = imoveis.mongoGetTituloQtde(data, KEY_JWK)
+    retorno = imoveis.mongoGetTituloQtde(data)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -261,7 +252,7 @@ def portal_url():
     retorno = {}
     imoveis = Imoveis()
     data = request.args
-    retorno = imoveis.mongoGetURL(data, KEY_JWK)
+    retorno = imoveis.mongoGetURL(data)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -273,7 +264,7 @@ def portal_qtde():
     retorno = {}
     imoveis = Imoveis()
     data = request.args
-    retorno = imoveis.mongoGetTituloQtde(data, KEY_JWK)
+    retorno = imoveis.mongoGetTituloQtde(data)
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -308,7 +299,7 @@ def portal_empresas():
 @app.route('/registra_log',methods=['POST'])
 def registra_log():
     log = Log_portal()
-    retorno = log.set(KEY_JWK)
+    retorno = log.set()
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -319,7 +310,7 @@ def registra_log():
 @app.route('/set_contato',methods=['POST'])
 def set_contato():
     contato = Contato_site()
-    retorno = contato.set(KEY_JWK)
+    retorno = contato.set()
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN
@@ -1050,9 +1041,8 @@ def before_request():
         if 'auth' in request.path and request.method == 'POST':
             pass
         elif 'authorization' in request.headers:
-            token = request.headers['authorization'].replace('Bearer ', '').strip()
-            ET = jwt.JWT(key=KEY_JWK, jwt=token)
-            info = json.loads(ET.claims)
+            token = myToken()
+            info = token.getInfo()
             if 'id' in info:
                 usuario = UsuarioPortal()
                 if usuario.getId(info['id']):
