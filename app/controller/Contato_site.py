@@ -58,8 +58,7 @@ class Contato_site(object):
             smtp = mySMTP(contato_site)
             smtp.envioEmpresa()
             smtp.envioUsuario()
-            retorno = {"status": True, "message": "Mensagem salva, consulte a mensagem no chat, que esta no menu"}
-            return retorno
+            retorno = {"status": True, "message": "Mensagem salva, a imobiliaria foi avisada da sua dúvida"}
             verificaChatAtivo = self.chatMongo.getItemFiltro({'usuario_site':info['id'], 'id_imovel': int(data['id_imovel'])})
             if verificaChatAtivo:
                 # todo: adiciona interacao
