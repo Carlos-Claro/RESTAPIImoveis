@@ -14,7 +14,7 @@ from library.mySMTP import mySMTP
 from flask import request
 import time
 import datetime
-from jwcrypto import jwt,jwk
+
 
 
 class Contato_site(object):

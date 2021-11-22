@@ -29,6 +29,7 @@ from controller.Google_search_terms import Google_search_terms
 from controller.Empresas import Empresas
 from controller.Usuario_portal import UsuarioPortal
 from controller.Log_portal import Log_portal
+from controller.Chat import Chat
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
@@ -311,6 +312,26 @@ def registra_log():
 def set_contato():
     contato = Contato_site()
     retorno = contato.set()
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+@app.route('/set_chat',methods=['GET'])
+def set_chat():
+    chat = Chat()
+    retorno = chat.get()
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+@app.route('/set_chat_qtde',methods=['GET'])
+def set_chat_qtde():
+    chat = Chat()
+    retorno = chat.get_qtde()
     status_r = status.HTTP_200_OK
     if retorno is False:
         status_r = status.HTTP_403_FORBIDDEN

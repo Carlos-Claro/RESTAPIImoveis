@@ -27,7 +27,7 @@ class chatMongo(object):
         return self.db.get_item_filtro(self.collection, data)
 
     def getItens(self, data):
-        return self.db.getItens(self.collection, data)
+        return self.db.get_itens(self.collection, data)
 
 
 
