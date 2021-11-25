@@ -328,6 +328,18 @@ def set_chat():
     return jsonify(retorno), status_r
 
 
+@app.route('/set_chat_add',methods=['POST'])
+def set_chat_add():
+    chat = Chat()
+    retorno = chat.set()
+    status_r = status.HTTP_200_OK
+    if retorno is False:
+        status_r = status.HTTP_403_FORBIDDEN
+    return jsonify(retorno), status_r
+
+
+
+
 @app.route('/set_chat_qtde',methods=['GET'])
 def set_chat_qtde():
     chat = Chat()

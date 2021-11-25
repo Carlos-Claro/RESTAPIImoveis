@@ -72,6 +72,7 @@ class Contato_site(object):
                     'id_imovel': int(data['id_imovel']),
                     'status': True,
                     'status_interacao':0,
+                    'link':link,
                     'date':datetime.datetime.now(),
                     'interacao': [{'autor':'usuario', 'message': data['message'], 'date':datetime.datetime.now()}]
                 }
