@@ -79,7 +79,7 @@ class Imoveis(object):
         data = {}
         data['limit'] = request.args['limit']
         if request.args['id_empresa']:
-            data['where'] = ['imoveis.id_empresa = ' + request.args['id_empresa']]
+            data['filtro'] = 'imoveis.id_empresa = ' + request.args['id_empresa']
         value = self.imoveisModel.getItens_integra(data)
         if value['qtde'] == 0 :
             return False
