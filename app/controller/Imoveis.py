@@ -15,7 +15,7 @@ from library.myToken import myToken
 from flask import request
 import time
 import datetime
-from jwcrypto import jwt,jwk
+# from jwcrypto import jwt,jwk
 
 
 class Imoveis(object):
