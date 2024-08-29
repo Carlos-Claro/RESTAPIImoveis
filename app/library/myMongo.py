@@ -6,7 +6,7 @@ import pprint
 
 class myMongo(object):
     def __init__(self,database):
-        self.client = pymongo.MongoClient("192.168.0.150",27017)
+        self.client = pymongo.MongoClient("localhost",27017)
         self.db = self.client[database]
 
     def add_one(self,collection,data):
