@@ -22,7 +22,7 @@ from controller.Clientes_cadastros import Clientes_cadastros
 from controller.Clientes_carrinhos import Clientes_carrinhos
 from controller.Clientes_carrinhos_produtos import Clientes_carrinhos_produtos
 from controller.Clientes_carrinhos_historico import Clientes_carrinhos_historico
-from controller.Contato_site import Contato_site
+# from controller.Contato_site import Contato_site
 from controller.Produtos import Produtos
 from controller.Google_search import Google_search
 from controller.Google_search_terms import Google_search_terms
@@ -308,14 +308,14 @@ def registra_log():
 
 
 
-@app.route('/set_contato',methods=['POST'])
-def set_contato():
-    contato = Contato_site()
-    retorno = contato.set()
-    status_r = status.HTTP_200_OK
-    if retorno is False:
-        status_r = status.HTTP_403_FORBIDDEN
-    return jsonify(retorno), status_r
+# @app.route('/set_contato',methods=['POST'])
+# def set_contato():
+#     contato = Contato_site()
+#     retorno = contato.set()
+#     status_r = status.HTTP_200_OK
+#     if retorno is False:
+#         status_r = status.HTTP_403_FORBIDDEN
+#     return jsonify(retorno), status_r
 
 
 @app.route('/set_chat',methods=['GET'])
@@ -535,26 +535,26 @@ def log_imovel_min():
     # Contato site    #
 ########################################
 
-@app.route('/get_contatos/',methods=['GET'])
-def get_contatos():
-    retorno = {}
-    contatos = Contato_site()
-    retorno = contatos.getContatos()
-    return jsonify(retorno)
+# @app.route('/get_contatos/',methods=['GET'])
+# def get_contatos():
+#     retorno = {}
+#     contatos = Contato_site()
+#     retorno = contatos.getContatos()
+#     return jsonify(retorno)
 
-@app.route('/contatos_site_sincronizado/',methods=['PUT'])
-def contatos_site_sincronizado():
-    contato = Contato_site()
-    retorno = contato.update_sincronizado()
+# @app.route('/contatos_site_sincronizado/',methods=['PUT'])
+# def contatos_site_sincronizado():
+#     contato = Contato_site()
+#     retorno = contato.update_sincronizado()
 
-    return jsonify(retorno)
+#     return jsonify(retorno)
 
-@app.route('/contatos_site_sincronizado_des/',methods=['PUT'])
-def contatos_site_desincronizado():
-    contato = Contato_site()
-    retorno = contato.update_desincronizado()
+# @app.route('/contatos_site_sincronizado_des/',methods=['PUT'])
+# def contatos_site_desincronizado():
+#     contato = Contato_site()
+#     retorno = contato.update_desincronizado()
 
-    return jsonify(retorno)
+#     return jsonify(retorno)
 
 
 ########################################
@@ -1101,15 +1101,19 @@ def lista_ip():
             "189.39.42.155",
             "189.39.42.153",
             "127.0.0.1",
+            "172.20.0.1",
             # "45.181.36.234",
             "localhost"
             ]
 
 if __name__ == '__main__':
-    if 'localhost' in sys.argv:
-        app.run(host='192.168.0.106',port=5000,debug=True)
-        # app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
-    else:
-        app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
+    app.run(host='0.0.0.0',port=80,debug=True)
+    # comentario temporario para teste local com docker 
+    
+    # if 'localhost' in sys.argv:
+    #     app.run(host='192.168.0.106',port=5000,debug=True)
+    #     # app.run(host='192.168.10.109',port=5000,debug=True,ssl_context=('cert.pem', 'key.pem'))
+    # else:
+    #     app.run(host='127.0.0.1',port=80,debug=False,ssl_context='adhoc')
 
 
