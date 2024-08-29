@@ -11,11 +11,11 @@ from model.imoveisMongo import imoveisMongo
 from controller.Log_pesquisas import Log_pesquisas
 
 from library.myMongo import myMongo
-from library.myToken import myToken
+# from library.myToken import myToken
 from flask import request
 import time
 import datetime
-# from jwcrypto import jwt,jwk
+
 
 
 class Imoveis(object):
@@ -211,17 +211,17 @@ class Imoveis(object):
         self.setLogPesquisa(retorno['parametros'])
         return retorno
 
-    def setLogPesquisa(self, pesquisa):
-        token = myToken()
-        info = token.getInfo()
-        data_p = {'usuario_portal': info['id'],
-                  'ip': request.remote_addr,
-                  'host': request.headers['origin'],
-                  'date': datetime.datetime.now()
-                  }
-        log = Log_pesquisas()
-        log.add(data_p,pesquisa)
-        return True
+    # def setLogPesquisa(self, pesquisa):
+    #     token = myToken()
+    #     info = token.getInfo()
+    #     data_p = {'usuario_portal': info['id'],
+    #               'ip': request.remote_addr,
+    #               'host': request.headers['origin'],
+    #               'date': datetime.datetime.now()
+    #               }
+    #     log = Log_pesquisas()
+    #     log.add(data_p,pesquisa)
+    #     return True
 
 
     def retornaURI(self,data):
