@@ -28,14 +28,14 @@ from controller.Google_search import Google_search
 from controller.Google_search_terms import Google_search_terms
 from controller.Empresas import Empresas
 from controller.Usuario_portal import UsuarioPortal
-from controller.Log_portal import Log_portal
-from controller.Chat import Chat
+# from controller.Log_portal import Log_portal
+# from controller.Chat import Chat
 
 from controller.Tempo import Tempo
 from library.Exception import RequestInvalido, RequestIncompleto
 from library.Exception import RequestRetornaZeroItens
 
-from library.myToken import myToken
+# from library.myToken import myToken
 from library.myKeys import myKeys
 
 
@@ -80,26 +80,26 @@ def auth():
     retorno = {'token': token.set({"id": str(id), "islogin": False})}
     return jsonify(retorno), status_r
 
-@app.route('/atualiza_token', methods=['POST'])
-def atualiza_token():
-    token_ = myToken()
-    info = token_.getInfo()
-    id_antigo = info['id']
-    data = json.loads(request.data)
-    usuario = UsuarioPortal()
-    log = Log_portal()
-    data_usuario = usuario.getItemFiltro({"email": data['email']})
-    if data_usuario:
-        id = data_usuario['_id']
-        retorno = {'token': token_.set({"id": str(id), "islogin": True})}
-        filtro_update = {'usuario_portal': id_antigo}
-        data_update = {'usuario_portal': str(id)}
-        qtde_update = log.update_filtro(filtro_update, data_update)
-        status_r = status.HTTP_200_OK
-        return jsonify(retorno), status_r
-    status_r = status.HTTP_404_NOT_FOUND
-    retorno = {'token': False}
-    return jsonify(retorno), status_r
+# @app.route('/atualiza_token', methods=['POST'])
+# def atualiza_token():
+#     token_ = myToken()
+#     info = token_.getInfo()
+#     id_antigo = info['id']
+#     data = json.loads(request.data)
+#     usuario = UsuarioPortal()
+#     log = Log_portal()
+#     data_usuario = usuario.getItemFiltro({"email": data['email']})
+#     if data_usuario:
+#         id = data_usuario['_id']
+#         retorno = {'token': token_.set({"id": str(id), "islogin": True})}
+#         filtro_update = {'usuario_portal': id_antigo}
+#         data_update = {'usuario_portal': str(id)}
+#         qtde_update = log.update_filtro(filtro_update, data_update)
+#         status_r = status.HTTP_200_OK
+#         return jsonify(retorno), status_r
+#     status_r = status.HTTP_404_NOT_FOUND
+#     retorno = {'token': False}
+#     return jsonify(retorno), status_r
 
 
 @app.route('/auth_cadastro', methods=['POST'])
@@ -297,14 +297,14 @@ def portal_empresas():
     return jsonify(retorno), status_r
 
 
-@app.route('/registra_log',methods=['POST'])
-def registra_log():
-    log = Log_portal()
-    retorno = log.set()
-    status_r = status.HTTP_200_OK
-    if retorno is False:
-        status_r = status.HTTP_403_FORBIDDEN
-    return jsonify(retorno), status_r
+# @app.route('/registra_log',methods=['POST'])
+# def registra_log():
+#     log = Log_portal()
+#     retorno = log.set()
+#     status_r = status.HTTP_200_OK
+#     if retorno is False:
+#         status_r = status.HTTP_403_FORBIDDEN
+#     return jsonify(retorno), status_r
 
 
 
